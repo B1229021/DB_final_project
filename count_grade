@@ -1,0 +1,16 @@
+CREATE VIEW grade_view AS
+SELECT
+    s.s_id,
+    100 + CAST(SUBSTRING(s.s_id, 2, 2) AS UNSIGNED) AS entrance_year,
+    CASE
+        WHEN MONTH(CURRENT_DATE()) >= 8 THEN YEAR(CURRENT_DATE()) - 1911 + 1
+        ELSE YEAR(CURRENT_DATE()) - 1911
+    END AS current_year,
+    LEAST(
+        CASE
+            WHEN MONTH(CURRENT_DATE()) >= 8 THEN YEAR(CURRENT_DATE()) - 1911 + 1
+            ELSE YEAR(CURRENT_DATE()) - 1911
+        END - (100 + CAST(SUBSTRING(s.s_id, 2, 2) AS UNSIGNED)) + 1,
+        4
+    ) AS grade
+FROM student s;
