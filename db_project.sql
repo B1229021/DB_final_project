@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2025-05-18 18:09:39
+-- 產生時間： 2025-05-19 17:43:04
 -- 伺服器版本： 10.4.32-MariaDB
--- PHP 版本： 8.0.30
+-- PHP 版本： 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- 資料庫： `project`
+-- 資料庫： `db_project`
 --
 
 -- --------------------------------------------------------
@@ -32,6 +32,13 @@ CREATE TABLE `notice` (
   `p_id` varchar(10) NOT NULL,
   `text` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `notice`
+--
+
+INSERT INTO `notice` (`id`, `p_id`, `text`) VALUES
+(1, 'D0000001', '我有潔癖，見不得笨蛋、傻瓜、白癡，看見了，就想死');
 
 -- --------------------------------------------------------
 
@@ -53,7 +60,8 @@ CREATE TABLE `professor` (
 --
 
 INSERT INTO `professor` (`u_id`, `p_id`, `department`, `password`, `name`, `position`) VALUES
-('DF45126455', 'D1212121', '資工系', 'D1212121', '王小明', '教授');
+('DF45126455', 'D1212121', '資工系', 'D1212121', '王小明', '教授'),
+('nfiu4389hngaeio8rg', 'D0000001', '資工系', '123456789', '拉蒂奧', '教授');
 
 -- --------------------------------------------------------
 
@@ -69,6 +77,13 @@ CREATE TABLE `schedule` (
   `time_slot_id` int(11) NOT NULL,
   `text` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `schedule`
+--
+
+INSERT INTO `schedule` (`id`, `s_id`, `p_id`, `week_id`, `time_slot_id`, `text`) VALUES
+(1, 'B0153120', 'D1212121', 5, 1, '你的描述与结果相差甚远，不过我也并没有寄希望于你能得到更准确的答案。');
 
 -- --------------------------------------------------------
 
@@ -197,13 +212,13 @@ ALTER TABLE `week_day`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `notice`
 --
 ALTER TABLE `notice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `schedule`
 --
 ALTER TABLE `schedule`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `time_slot`
