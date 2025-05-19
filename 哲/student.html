@@ -18,8 +18,7 @@
                 <label for="department">科系：</label>
                 <select id="department" class="dropdown">
                     <option value="" selected hidden>科系</option>
-                    <input type="hidden" id="id" value="">
-
+                    
                 </select>
             </div>
             <div class="dropdown-container">
@@ -43,16 +42,24 @@
     
     <div class="container">
         <div class="sidebar">
+            <!-- 新增預約紀錄區域 -->
             <div class="sidebar-section">
-                <div class="sidebar-item" data-type="schedule" data-id="4">
-                    <span>客服</span>
-                    <span>type</span>
+                <div class="section-title">預約紀錄</div>
+                <div id="appointment-records">
+                    <!-- 預約紀錄將由JavaScript動態添加 -->
                 </div>
             </div>
             
             <!-- 聊天聯絡人區域 - 初始為空 -->
             <div class="chat-contacts" id="chat-contacts">
+                <!-- 聊天聯絡人將由JavaScript動態添加 -->
+            </div>
 
+            <!-- 客服按鈕移至左下角 -->
+            <div class="customer-service-container">
+                <div class="sidebar-item" id="customer-service" data-type="schedule" data-id="4">
+                    <span>客服</span>
+                </div>
             </div>
         </div>
         
@@ -62,9 +69,10 @@
                 <h1 class="schedule-title">課表</h1>
                 <div class="color-items">
                     <div class="color-item">
-                        <div class="color-label">白色=不可預約</div>
-                        <div class="color-label">綠色 =可預約</div>
-                        <div class="color-label">紅色 =有人預約</div>
+                        <div class="color-label">白色 = 不可預約</div>
+                        <div class="color-label">綠色 = 可預約</div>
+                        <div class="color-label">黃色 = 等待教授確認</div>
+                        <div class="color-label">紅色 = 已確認預約</div>
                     </div>
                 </div>
 
@@ -153,6 +161,21 @@
                 <div class="chat-input-area">
                     <input type="text" class="chat-input" id="chat-input" placeholder="輸入訊息...">
                     <button class="send-btn" id="send-btn">➤</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 預約對話框 -->
+        <div id="reservation-modal" class="reservation-modal" style="display: none;">
+            <div class="reservation-content">
+                <h3>確認預約</h3>
+                <div class="type-area">
+                    <label for="reservation-purpose">預約目的:</label>
+                    <textarea id="reservation-purpose" class="type-input" rows="4"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn-no" id="cancel-reservation">取消</button>
+                    <button class="btn-yes" id="confirm-reservation">確認</button>
                 </div>
             </div>
         </div>
