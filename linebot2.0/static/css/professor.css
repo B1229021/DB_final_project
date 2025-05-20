@@ -1,0 +1,248 @@
+/* professor.css */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Microsoft YaHei", "微軟雅黑", sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex: 1;
+    background-color: white;
+    border: 1px solid #ddd;
+    margin: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    background-color: white;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.search-area {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+}
+
+.dropdown-container {
+    position: relative;
+}
+
+.dropdown {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+.search-box {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    width: 150px;
+}
+
+.sidebar {
+    width: 200px;
+    border-right: 1px solid #ddd;
+    padding: 20px 0;
+    background-color: white;
+    overflow-y: auto;
+}
+
+.sidebar-item {
+    padding: 10px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-item:hover {
+    background-color: #f0f0f0;
+}
+
+.sidebar-item.active {
+    color: #4169E1;
+    font-weight: bold;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.schedule-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.color-items .color-label {
+    margin-right: 20px;
+    font-size: 0.9rem;
+}
+
+.timetable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.timetable th, .timetable td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: center;
+}
+
+.timetable th {
+    background-color: #000;
+    color: #fff;
+}
+
+.timetable td {
+    height: 60px;
+}
+
+.time-slot {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.time-slot.available {
+    background-color: #c8e6c9; /* Green */
+}
+
+.time-slot.pending {
+    background-color: #fff9c4; /* Yellow */
+}
+
+.time-slot.confirmed {
+    background-color: #ffcdd2; /* Red */
+}
+
+.announcement {
+    margin-top: 30px;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.announcement h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#announcement-text {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    resize: none;
+    font-size: 1rem;
+}
+
+#send-announcement {
+    padding: 8px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#send-announcement:hover {
+    background-color: #45a049;
+}
+
+.chat-view {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chat-header {
+    padding: 15px;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+}
+
+.message {
+    margin-bottom: 15px;
+    max-width: 70%;
+}
+
+.message.sent {
+    align-self: flex-end;
+    background-color: #dcf8c6;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.message.received {
+    align-self: flex-start;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.chat-input-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    background-color: #f0f0f0;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+.send-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #4169E1;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
