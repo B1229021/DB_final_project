@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教授課表系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/professor.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">教授課表系統</div>
+        <div class="search-area">
+            <input type="text" class="search-box" placeholder="搜尋學生/科系">
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-item" id="customer-service-btn">
+                    <span>客服中心</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="schedule-view" class="schedule-view">
+                <h1 class="schedule-title">教授課表</h1>
+                <div class="color-items">
+                    <div class="color-label">白色 = 不可預約</div>
+                    <div class="color-label green">綠色 = 可預約</div>
+                    <div class="color-label yellow">黃色 = 審核中</div>
+                    <div class="color-label red">紅色 = 已預約</div>
+                </div>
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th>時間</th>
+                            <th>一</th>
+                            <th>二</th>
+                            <th>三</th>
+                            <th>四</th>
+                            <th>五</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>08:10～09:00</td>
+                            <td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td>
+                        </tr>
+                        <tr>
+                            <td>09:10～10:00</td>
+                            <td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td>
+                        </tr>
+                        <tr>
+                            <td>10:10～11:00</td>
+                            <td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td>
+                        </tr>
+                        <tr>
+                            <td>11:10～12:00</td>
+                            <td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td>
+                        </tr>
+                        <tr>
+                            <td>13:10～14:00</td>
+                            <td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td>
+                        </tr>
+                        <tr>
+                            <td>14:10～15:00</td>
+                            <td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td>
+                        </tr>
+                        <tr>
+                            <td>15:10～16:00</td>
+                            <td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td><td class="slot"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="announcement">
+                    <h3>發布公告</h3>
+                    <textarea id="announcement-input" placeholder="輸入公告內容..."></textarea>
+                    <button id="post-announcement">發送</button>
+                </div>
+            </div>
+
+            <div id="chat-view" class="chat-view hidden">
+                <div class="chat-header">
+                    <button id="back-to-schedule" class="back-btn">返回課表</button>
+                    <div class="chat-header-info">
+                        <div class="chat-header-name">客服中心</div>
+                        <div class="chat-header-title">支援與協助</div>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="輸入訊息...">
+                    <button class="send-btn" id="send-btn">➤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/professor.js') }}"></script>
+</body>
+</html>
