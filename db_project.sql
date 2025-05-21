@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2025-05-20 05:23:12
+-- 產生時間： 2025-05-21 13:18:12
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -24,407 +24,263 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `announcement`
+-- 資料表結構 `admin`
 --
 
-CREATE TABLE `announcement` (
+CREATE TABLE `admin` (
+  `uid` varchar(50) NOT NULL,
+  `account` varchar(50) NOT NULL,
+  `password` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `admin`
+--
+
+INSERT INTO `admin` (`uid`, `account`, `password`) VALUES
+('gGd8go3Axfg89FDrhnGSRFeHrbg4b', 'banban', '123456789'),
+('rkne8sw7dhsHfFBdfkD89frgsdUJfdD', 'pizza@gmail.com', '123456789');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `categories`
+--
+
+CREATE TABLE `categories` (
+  `categories_id` int(4) NOT NULL,
+  `content` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `categories`
+--
+
+INSERT INTO `categories` (`categories_id`, `content`) VALUES
+(1, '娛樂 / 表演'),
+(2, '教育 / 課程'),
+(3, '健康 / 運動'),
+(4, '戶外 / 旅遊'),
+(5, '社交 / 聯誼'),
+(6, '專業 / 商務'),
+(7, '市集 / 展覽'),
+(8, '志工 / 公益'),
+(9, '親子 / 家庭');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `event`
+--
+
+CREATE TABLE `event` (
+  `categories_id` int(4) NOT NULL,
+  `event_id` int(4) NOT NULL,
+  `content` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `event`
+--
+
+INSERT INTO `event` (`categories_id`, `event_id`, `content`) VALUES
+(1, 1, '音樂會 / 演唱會'),
+(1, 2, '舞台劇 / 戲劇'),
+(1, 3, '喜劇 / 脫口秀'),
+(1, 4, '電影放映'),
+(1, 5, '藝文展覽'),
+(2, 6, '語言學習'),
+(2, 7, '程式設計 / 科技'),
+(2, 8, '財經 / 理財'),
+(2, 9, '創業 / 行銷'),
+(2, 10, '藝術 / 手作'),
+(2, 11, '親子教育'),
+(3, 12, '瑜伽 / 伸展'),
+(3, 13, '跑步 / 馬拉松'),
+(3, 14, '健身 / 重訓'),
+(3, 15, '健康講座'),
+(3, 16, '心理成長'),
+(4, 16, '登山 / 健行'),
+(4, 17, '露營'),
+(4, 18, '一日遊 / 導覽'),
+(4, 19, '寵物活動'),
+(4, 20, '環保志工'),
+(5, 21, '交友活動'),
+(5, 22, '桌遊聚會'),
+(5, 23, '同好社團'),
+(5, 24, '單身派對'),
+(5, 25, '品酒會 / 美食聚會'),
+(6, 26, '產業論壇'),
+(6, 27, '科技年會'),
+(6, 28, '招聘會 / 就業博覽'),
+(6, 29, '商業講座'),
+(6, 30, 'B2B 推介會'),
+(7, 31, '創意市集'),
+(7, 32, '文創展'),
+(7, 33, '寵物展'),
+(7, 34, '車展'),
+(7, 35, '書展'),
+(8, 36, '公益市集'),
+(8, 37, '街頭募款'),
+(8, 38, '社區服務'),
+(8, 39, '資源回收活動'),
+(9, 40, '兒童劇場'),
+(9, 41, '親子手作'),
+(9, 42, '親子戶外活動'),
+(9, 43, '媽媽教室');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `involvement`
+--
+
+CREATE TABLE `involvement` (
+  `orderid` int(11) NOT NULL,
+  `uid` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `involvement`
+--
+
+INSERT INTO `involvement` (`orderid`, `uid`) VALUES
+(1, 'gjhdri4h509ah1h73h2hsdlo3'),
+(1, 'gsd8fgl3vx0dh3g3h36h6h0az1he0f1h'),
+(2, 'jre82jd02ls6gwsnx5reww5oosh');
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `order_detail`
+--
+
+CREATE TABLE `order_detail` (
   `id` int(11) NOT NULL,
-  `p_id` varchar(20) NOT NULL,
-  `n_id` int(11) NOT NULL
+  `booker` varchar(50) NOT NULL,
+  `location` varchar(100) NOT NULL,
+  `gender_limit` varchar(1) DEFAULT NULL,
+  `deadtime` datetime NOT NULL,
+  `annotation` varchar(200) DEFAULT NULL,
+  `participants` int(2) NOT NULL DEFAULT 1,
+  `state` varchar(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- 傾印資料表的資料 `announcement`
+-- 傾印資料表的資料 `order_detail`
 --
 
-INSERT INTO `announcement` (`id`, `p_id`, `n_id`) VALUES
-(1, 'D1212122', 1),
-(2, 'D1212124', 2);
+INSERT INTO `order_detail` (`id`, `booker`, `location`, `gender_limit`, `deadtime`, `annotation`, `participants`, `state`) VALUES
+(1, 'g8hl30shd2gg78nfdol3iixye6sio62xuue', '台北市信義區市府路5段', NULL, '2025-06-06 10:00:00', '放假第一天，出去玩，上午十點集合', 2, '已預約'),
+(2, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '台北市中山區南京西路12號', '女', '2025-05-11 14:28:41', '母親節打折，去逛街，下午一點集合!!!', 4, '已結束');
 
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `blacklist`
+-- 資料表結構 `user`
 --
 
-CREATE TABLE `blacklist` (
-  `p_id` varchar(20) NOT NULL,
-  `s_id` varchar(20) NOT NULL,
-  `text` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `blacklist`
---
-
-INSERT INTO `blacklist` (`p_id`, `s_id`, `text`) VALUES
-('D1212122', 'B1229021', '未依規定時間完成預約'),
-('D1212124', 'B1229051', '多次未出席預約');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `notice`
---
-
-CREATE TABLE `notice` (
-  `id` int(11) NOT NULL,
-  `text` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `notice`
---
-
-INSERT INTO `notice` (`id`, `text`) VALUES
-(1, '未依規定時間完成預約'),
-(2, '期末考報告繳交期限到 6 月 20 日');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `person`
---
-
-CREATE TABLE `person` (
-  `u_id` varchar(50) NOT NULL,
+CREATE TABLE `user` (
+  `uid` varchar(50) NOT NULL,
+  `account` varchar(100) NOT NULL,
+  `password` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `dept` varchar(50) DEFAULT NULL
+  `gender` varchar(1) NOT NULL,
+  `good` int(4) DEFAULT NULL,
+  `bad` int(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- 傾印資料表的資料 `person`
+-- 傾印資料表的資料 `user`
 --
 
-INSERT INTO `person` (`u_id`, `name`, `password`, `dept`) VALUES
-('Uab68e67854ff651a578c7918ae0b2aa1', '李大志', 'D0000146', '資工系'),
-('Uab68e67854ff651a578c7918ae0b2aaa', '小滿', 'P123456', 'Admin'),
-('Ucd68e67854ff651a578c7918ae0b2cc3', '張偉豪', 'D0000148', '電機系'),
-('Ud759801d757d52e40195cffd858b5089', '黃一哲', '12345678', '資工系'),
-('Udd68e63026ff651a578c7918ae0b1fd6', '黃星昊', 'B1229021', '資工系');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `professor`
---
-
-CREATE TABLE `professor` (
-  `u_id` varchar(50) NOT NULL,
-  `p_id` varchar(20) NOT NULL,
-  `position` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `professor`
---
-
-INSERT INTO `professor` (`u_id`, `p_id`, `position`) VALUES
-('Uab68e67854ff651a578c7918ae0b2aa1', 'D1212122', '助理教授'),
-('Ucd68e67854ff651a578c7918ae0b2cc3', 'D1212124', '教授');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `report`
---
-
-CREATE TABLE `report` (
-  `u_id` varchar(50) NOT NULL,
-  `r_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `report`
---
-
-INSERT INTO `report` (`u_id`, `r_id`) VALUES
-('Ud759801d757d52e40195cffd858b5089', 2),
-('Udd68e63026ff651a578c7918ae0b1fd6', 1);
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `report_table`
---
-
-CREATE TABLE `report_table` (
-  `id` int(11) NOT NULL,
-  `text` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `report_table`
---
-
-INSERT INTO `report_table` (`id`, `text`) VALUES
-(1, '找不到教授'),
-(2, '預約按鈕沒有反應'),
-(3, '課表沒有正常載入'),
-(4, '找不到教授'),
-(5, '預約按鈕沒有反應'),
-(6, '課表沒有正常載入');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `schedule`
---
-
-CREATE TABLE `schedule` (
-  `id` int(11) NOT NULL,
-  `p_id` varchar(20) DEFAULT NULL,
-  `s_id` varchar(20) DEFAULT NULL,
-  `time_slot_id` int(11) DEFAULT NULL,
-  `week_id` int(11) DEFAULT NULL,
-  `text` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `schedule`
---
-
-INSERT INTO `schedule` (`id`, `p_id`, `s_id`, `time_slot_id`, `week_id`, `text`) VALUES
-(1, 'D1212122', 'B1229021', 1, 1, '資料結構輔導'),
-(2, 'D1212122', 'B1229021', 3, 3, '演算法面試準備'),
-(3, 'D1212124', 'B1229051', 2, 2, '電機原理實驗'),
-(4, 'D1212124', 'B1229051', 5, 4, '自動控制系統討論');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `student`
---
-
-CREATE TABLE `student` (
-  `u_id` varchar(50) NOT NULL,
-  `s_id` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `student`
---
-
-INSERT INTO `student` (`u_id`, `s_id`) VALUES
-('Udd68e63026ff651a578c7918ae0b1fd6', 'B1229021'),
-('Ud759801d757d52e40195cffd858b5089', 'B1229051');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `time_slot`
---
-
-CREATE TABLE `time_slot` (
-  `id` int(11) NOT NULL,
-  `time_start` time NOT NULL,
-  `time_end` time NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `time_slot`
---
-
-INSERT INTO `time_slot` (`id`, `time_start`, `time_end`) VALUES
-(1, '08:00:00', '09:00:00'),
-(2, '09:00:00', '10:00:00'),
-(3, '10:00:00', '11:00:00'),
-(4, '11:00:00', '12:00:00'),
-(5, '12:00:00', '13:00:00'),
-(6, '13:00:00', '14:00:00'),
-(7, '14:00:00', '15:00:00'),
-(8, '15:00:00', '16:00:00'),
-(9, '16:00:00', '17:00:00');
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `week_day`
---
-
-CREATE TABLE `week_day` (
-  `id` int(11) NOT NULL,
-  `day` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `week_day`
---
-
-INSERT INTO `week_day` (`id`, `day`) VALUES
-(1, 'Monday'),
-(2, 'Tuesday'),
-(3, 'Wednesday'),
-(4, 'Thursday'),
-(5, 'Friday');
+INSERT INTO `user` (`uid`, `account`, `password`, `name`, `gender`, `good`, `bad`) VALUES
+('f8dh3ld8bnwe3bfx8hre3jt7b01gvd', 'thisishowtobeaheartbreaker@gmail.com', 'heartbreaker', '陳欣妤', '女', NULL, NULL),
+('g8hl30shd2gg78nfdol3iixye6sio62xuue', 'fentorisu@yahoo.com.tw', '123456789', '林俊傑', '男', NULL, NULL),
+('gjhdri4h509ah1h73h2hsdlo3', 'B1229099@cgu.edu.tw', 'B229099', '林威宇', '男', NULL, NULL),
+('gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', 'banana001@gmail.com', '987654321', '黃逗號', '男', NULL, NULL),
+('jre82jd02ls6gwsnx5reww5oosh', 'pizzahahahahaha@gmail.com', '123456789', '王曉明', '女', NULL, NULL);
 
 --
 -- 已傾印資料表的索引
 --
 
 --
--- 資料表索引 `announcement`
+-- 資料表索引 `admin`
 --
-ALTER TABLE `announcement`
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`uid`);
+
+--
+-- 資料表索引 `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`categories_id`);
+
+--
+-- 資料表索引 `event`
+--
+ALTER TABLE `event`
+  ADD PRIMARY KEY (`categories_id`,`event_id`);
+
+--
+-- 資料表索引 `involvement`
+--
+ALTER TABLE `involvement`
+  ADD PRIMARY KEY (`orderid`,`uid`),
+  ADD KEY `uid` (`uid`);
+
+--
+-- 資料表索引 `order_detail`
+--
+ALTER TABLE `order_detail`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `p_id` (`p_id`),
-  ADD KEY `n_id` (`n_id`);
+  ADD KEY `booker` (`booker`);
 
 --
--- 資料表索引 `blacklist`
+-- 資料表索引 `user`
 --
-ALTER TABLE `blacklist`
-  ADD PRIMARY KEY (`p_id`,`s_id`),
-  ADD KEY `p_id` (`p_id`),
-  ADD KEY `s_id` (`s_id`);
-
---
--- 資料表索引 `notice`
---
-ALTER TABLE `notice`
-  ADD PRIMARY KEY (`id`);
-
---
--- 資料表索引 `person`
---
-ALTER TABLE `person`
-  ADD PRIMARY KEY (`u_id`);
-
---
--- 資料表索引 `professor`
---
-ALTER TABLE `professor`
-  ADD PRIMARY KEY (`u_id`),
-  ADD UNIQUE KEY `p_id` (`p_id`);
-
---
--- 資料表索引 `report`
---
-ALTER TABLE `report`
-  ADD PRIMARY KEY (`u_id`,`r_id`),
-  ADD KEY `r_id` (`r_id`);
-
---
--- 資料表索引 `report_table`
---
-ALTER TABLE `report_table`
-  ADD PRIMARY KEY (`id`);
-
---
--- 資料表索引 `schedule`
---
-ALTER TABLE `schedule`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `p_id` (`p_id`),
-  ADD KEY `s_id` (`s_id`),
-  ADD KEY `time_slot_id` (`time_slot_id`),
-  ADD KEY `week_id` (`week_id`);
-
---
--- 資料表索引 `student`
---
-ALTER TABLE `student`
-  ADD PRIMARY KEY (`u_id`),
-  ADD UNIQUE KEY `s_id` (`s_id`);
-
---
--- 資料表索引 `time_slot`
---
-ALTER TABLE `time_slot`
-  ADD PRIMARY KEY (`id`);
-
---
--- 資料表索引 `week_day`
---
-ALTER TABLE `week_day`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`uid`);
 
 --
 -- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
 --
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `announcement`
+-- 使用資料表自動遞增(AUTO_INCREMENT) `categories`
 --
-ALTER TABLE `announcement`
+ALTER TABLE `categories`
+  MODIFY `categories_id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `order_detail`
+--
+ALTER TABLE `order_detail`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- 使用資料表自動遞增(AUTO_INCREMENT) `notice`
---
-ALTER TABLE `notice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- 使用資料表自動遞增(AUTO_INCREMENT) `report_table`
---
-ALTER TABLE `report_table`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- 使用資料表自動遞增(AUTO_INCREMENT) `schedule`
---
-ALTER TABLE `schedule`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- 使用資料表自動遞增(AUTO_INCREMENT) `time_slot`
---
-ALTER TABLE `time_slot`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- 使用資料表自動遞增(AUTO_INCREMENT) `week_day`
---
-ALTER TABLE `week_day`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- 已傾印資料表的限制式
 --
 
 --
--- 資料表的限制式 `announcement`
+-- 資料表的限制式 `event`
 --
-ALTER TABLE `announcement`
-  ADD CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`p_id`) REFERENCES `professor` (`p_id`),
-  ADD CONSTRAINT `announcement_ibfk_2` FOREIGN KEY (`n_id`) REFERENCES `notice` (`id`);
+ALTER TABLE `event`
+  ADD CONSTRAINT `event_ibfk_1` FOREIGN KEY (`categories_id`) REFERENCES `categories` (`categories_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- 資料表的限制式 `blacklist`
+-- 資料表的限制式 `involvement`
 --
-ALTER TABLE `blacklist`
-  ADD CONSTRAINT `blacklist_ibfk_1` FOREIGN KEY (`p_id`) REFERENCES `professor` (`p_id`),
-  ADD CONSTRAINT `blacklist_ibfk_2` FOREIGN KEY (`s_id`) REFERENCES `student` (`s_id`);
+ALTER TABLE `involvement`
+  ADD CONSTRAINT `involvement_ibfk_1` FOREIGN KEY (`orderid`) REFERENCES `order_detail` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `involvement_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`);
 
 --
--- 資料表的限制式 `professor`
+-- 資料表的限制式 `order_detail`
 --
-ALTER TABLE `professor`
-  ADD CONSTRAINT `professor_ibfk_1` FOREIGN KEY (`u_id`) REFERENCES `person` (`u_id`);
-
---
--- 資料表的限制式 `report`
---
-ALTER TABLE `report`
-  ADD CONSTRAINT `report_ibfk_1` FOREIGN KEY (`u_id`) REFERENCES `person` (`u_id`),
-  ADD CONSTRAINT `report_ibfk_2` FOREIGN KEY (`r_id`) REFERENCES `report_table` (`id`);
-
---
--- 資料表的限制式 `schedule`
---
-ALTER TABLE `schedule`
-  ADD CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`p_id`) REFERENCES `professor` (`p_id`),
-  ADD CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`s_id`) REFERENCES `student` (`s_id`),
-  ADD CONSTRAINT `schedule_ibfk_3` FOREIGN KEY (`time_slot_id`) REFERENCES `time_slot` (`id`),
-  ADD CONSTRAINT `schedule_ibfk_4` FOREIGN KEY (`week_id`) REFERENCES `week_day` (`id`);
-
---
--- 資料表的限制式 `student`
---
-ALTER TABLE `student`
-  ADD CONSTRAINT `student_ibfk_1` FOREIGN KEY (`u_id`) REFERENCES `person` (`u_id`);
+ALTER TABLE `order_detail`
+  ADD CONSTRAINT `order_detail_ibfk_1` FOREIGN KEY (`booker`) REFERENCES `user` (`uid`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
