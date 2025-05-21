@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入頁面</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+    <!-- <link rel="stylesheet" href="http://localhost/linebot2.0/static/css/login.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="bg-image d-flex justify-content-center align-items-center">
+        <div class="card login-card">
+            <div class="card-body">
+                <h5 class="card-title text-center mb-4">登入頁面</h5>
+
+                <form action="{{ url_for('login') }}" method="POST">
+                <!-- <form id="loginForm" action="/login" method="POST"> -->
+                <!-- <form action="http://localhost/linebot2.0/action.php?act=save_student" method="POST"> -->
+
+
+                    <!-- <input type="hidden" id="u_id" name="u_id"> -->
+
+                    <div class="mb-3">
+                        <label for="account">帳號：</label>
+                        <input type="text" id="account" name="account" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password">密碼：</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <input type="submit" class="btn btn-primary" value="登入">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入 Bootstrap JS 和 Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <!-- <script src="http://localhost/linebot2.0/static/js/login.js"></script> -->
+     <link rel="stylesheet" href="{{ url_for('static', filename='js/login.js') }}">
+
+</body>
+</html>
