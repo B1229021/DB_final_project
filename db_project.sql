@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2025-05-21 13:51:55
+-- 產生時間： 2025-05-21 16:40:09
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -99,7 +99,6 @@ INSERT INTO `event` (`categories_id`, `event_id`, `content`) VALUES
 (3, 13, '跑步 / 馬拉松'),
 (3, 14, '健身 / 重訓'),
 (3, 15, '健康講座'),
-(3, 16, '心理成長'),
 (4, 16, '登山 / 健行'),
 (4, 17, '露營'),
 (4, 18, '一日遊 / 導覽'),
@@ -163,16 +162,17 @@ CREATE TABLE `order_detail` (
   `deadtime` datetime NOT NULL,
   `annotation` varchar(200) DEFAULT NULL,
   `participants` int(2) NOT NULL DEFAULT 1,
-  `state` varchar(4) NOT NULL
+  `state` varchar(4) NOT NULL,
+  `event_id` int(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- 傾印資料表的資料 `order_detail`
 --
 
-INSERT INTO `order_detail` (`orderid`, `booker`, `location`, `gender_limit`, `deadtime`, `annotation`, `participants`, `state`) VALUES
-(1, 'g8hl30shd2gg78nfdol3iixye6sio62xuue', '台北市信義區市府路5段', NULL, '2025-06-06 10:00:00', '放假第一天，出去玩，上午十點集合', 2, '已預約'),
-(2, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '台北市中山區南京西路12號', '女', '2025-05-11 14:28:41', '母親節打折，去逛街，下午一點集合!!!', 4, '已結束');
+INSERT INTO `order_detail` (`orderid`, `booker`, `location`, `gender_limit`, `deadtime`, `annotation`, `participants`, `state`, `event_id`) VALUES
+(1, 'g8hl30shd2gg78nfdol3iixye6sio62xuue', '台北市信義區市府路5段', NULL, '2025-06-06 10:00:00', '放假第一天，出去玩，上午十點集合', 2, '已預約', 31),
+(2, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '台北市中山區南京西路12號', '女', '2025-05-11 14:28:41', '母親節打折，去逛街，下午一點集合!!!', 4, '已結束', 1);
 
 -- --------------------------------------------------------
 
@@ -186,8 +186,8 @@ CREATE TABLE `user` (
   `password` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
   `gender` varchar(1) NOT NULL,
-  `good` int(4) DEFAULT NULL,
-  `bad` int(4) DEFAULT NULL
+  `good` int(4) NOT NULL,
+  `bad` int(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -195,11 +195,11 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`uid`, `account`, `password`, `name`, `gender`, `good`, `bad`) VALUES
-('f8dh3ld8bnwe3bfx8hre3jt7b01gvd', 'thisishowtobeaheartbreaker@gmail.com', 'heartbreaker', '陳欣妤', '女', NULL, NULL),
-('g8hl30shd2gg78nfdol3iixye6sio62xuue', 'fentorisu@yahoo.com.tw', '123456789', '林俊傑', '男', NULL, NULL),
-('gjhdri4h509ah1h73h2hsdlo3', 'B1229099@cgu.edu.tw', 'B229099', '林威宇', '男', NULL, NULL),
-('gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', 'banana001@gmail.com', '987654321', '黃逗號', '男', NULL, NULL),
-('jre82jd02ls6gwsnx5reww5oosh', 'pizzahahahahaha@gmail.com', '123456789', '王曉明', '女', NULL, NULL);
+('f8dh3ld8bnwe3bfx8hre3jt7b01gvd', 'thisishowtobeaheartbreaker@gmail.com', 'heartbreaker', '陳欣妤', '女', 0, 0),
+('g8hl30shd2gg78nfdol3iixye6sio62xuue', 'fentorisu@yahoo.com.tw', '123456789', '林俊傑', '男', 0, 0),
+('gjhdri4h509ah1h73h2hsdlo3', 'B1229099@cgu.edu.tw', 'B229099', '林威宇', '男', 0, 0),
+('gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', 'banana001@gmail.com', '987654321', '黃逗號', '男', 0, 0),
+('jre82jd02ls6gwsnx5reww5oosh', 'pizzahahahahaha@gmail.com', '123456789', '王曉明', '女', 0, 0);
 
 --
 -- 已傾印資料表的索引
@@ -221,7 +221,8 @@ ALTER TABLE `categories`
 -- 資料表索引 `event`
 --
 ALTER TABLE `event`
-  ADD PRIMARY KEY (`categories_id`,`event_id`);
+  ADD PRIMARY KEY (`event_id`),
+  ADD KEY `categories_id` (`categories_id`);
 
 --
 -- 資料表索引 `involvement`
@@ -235,7 +236,8 @@ ALTER TABLE `involvement`
 --
 ALTER TABLE `order_detail`
   ADD PRIMARY KEY (`orderid`),
-  ADD KEY `booker` (`booker`);
+  ADD KEY `booker` (`booker`),
+  ADD KEY `event_id` (`event_id`);
 
 --
 -- 資料表索引 `user`
@@ -267,7 +269,7 @@ ALTER TABLE `order_detail`
 -- 資料表的限制式 `event`
 --
 ALTER TABLE `event`
-  ADD CONSTRAINT `event_ibfk_1` FOREIGN KEY (`categories_id`) REFERENCES `categories` (`categories_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `event_ibfk_1` FOREIGN KEY (`categories_id`) REFERENCES `categories` (`categories_id`);
 
 --
 -- 資料表的限制式 `involvement`
@@ -280,7 +282,8 @@ ALTER TABLE `involvement`
 -- 資料表的限制式 `order_detail`
 --
 ALTER TABLE `order_detail`
-  ADD CONSTRAINT `order_detail_ibfk_1` FOREIGN KEY (`booker`) REFERENCES `user` (`uid`);
+  ADD CONSTRAINT `order_detail_ibfk_1` FOREIGN KEY (`booker`) REFERENCES `user` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `order_detail_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`event_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
