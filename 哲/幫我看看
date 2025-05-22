@@ -94,6 +94,11 @@
             color: white;
         }
 
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+        }
+
         /* ========== 表單控制項樣式 ========== */
         .select-dropdown, .time-input {
             padding: 12px 16px;
@@ -290,6 +295,7 @@
             border-top: 1px solid #eee;
             background: #f8f9fa;
             border-radius: 0 0 20px 20px; /* 只有下方圓角 */
+            flex-wrap: wrap;
         }
 
         /* ========== 通知訊息樣式 ========== */
@@ -362,6 +368,11 @@
             /* 手機版：彈窗佔更多寬度 */
             .modal-content {
                 width: 95%;
+            }
+            
+            /* 手機版：表單操作按鈕 */
+            .form-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -489,6 +500,8 @@
                 this.apiBaseUrl = 'https://your-api-domain.com/api';
                 // 儲存所有活動的陣列
                 this.events = [];
+                // 當前用戶ID（實際應用中應該從登入系統獲取）
+                this.currentUserId = 1;
                 // 初始化系統
                 this.init();
             }
@@ -581,6 +594,8 @@
                                 description: '一起去西門町吃美食！',
                                 maxParticipants: 4,
                                 currentParticipants: 2,
+                                participants: [1, 2], // 參與者ID列表
+                                creatorId: 2, // 發起人ID
                                 contact: 'Line: foodlover123',
                                 createdAt: '2025-05-22T10:00:00'
                             },
@@ -594,6 +609,8 @@
                                 description: '看最新上映的電影',
                                 maxParticipants: 6,
                                 currentParticipants: 3,
+                                participants: [1, 3, 4], // 參與者ID列表
+                                creatorId: 1, // 發起人ID（當前用戶發起的）
                                 contact: '0912-345-678',
                                 createdAt: '2025-05-22T14:30:00'
                             }
@@ -632,6 +649,8 @@
                             ...eventData,
                             id: result.id,
                             currentParticipants: 1, // 發起人自動成為第一個參與者
+                            participants: [this.currentUserId], // 發起人自動加入參與者列表
+                            creatorId: this.currentUserId, // 設定發起人ID
                             createdAt: new Date().toISOString()
                         };
                         
@@ -651,26 +670,109 @@
              */
             async joinEvent(eventId) {
                 try {
-                    // 實際API調用範例（註解掉的部分）
-                    // const response = await fetch(`${this.apiBaseUrl}/events/${eventId}/join`, {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //     }
-                    // });
-                    // const result = await response.json();
-                    
-                    // 模擬加入活動邏輯
                     const event = this.events.find(e => e.id === eventId);
-                    if (event && event.currentParticipants < event.maxParticipants) {
-                        event.currentParticipants++; // 增加參與人數
-                        this.showNotification('成功加入活動！', 'success');
-                        this.renderEvents(this.events); // 重新渲染活動列表
-                    } else {
-                        this.showNotification('活動已滿或不存在', 'error');
+                    
+                    if (!event) {
+                        this.showNotification('活動不存在', 'error');
+                        return;
                     }
+                    
+                    // 檢查是否已經參與此活動
+                    if (event.participants.includes(this.currentUserId)) {
+                        this.showNotification('您已經參與此活動', 'error');
+                        return;
+                    }
+                    
+                    // 檢查活動是否已滿
+                    if (event.currentParticipants >= event.maxParticipants) {
+                        this.showNotification('活動已滿', 'error');
+                        return;
+                    }
+                    
+                    // 加入活動
+                    event.currentParticipants++;
+                    event.participants.push(this.currentUserId);
+                    
+                    this.showNotification('成功加入活動！', 'success');
+                    this.renderEvents(this.events); // 重新渲染活動列表
+                    
                 } catch (error) {
                     this.showNotification('加入活動失敗', 'error');
+                }
+            }
+
+            /**
+             * 取消參與活動
+             * @param {number} eventId - 活動ID
+             */
+            async leaveEvent(eventId) {
+                try {
+                    const event = this.events.find(e => e.id === eventId);
+                    
+                    if (!event) {
+                        this.showNotification('活動不存在', 'error');
+                        return;
+                    }
+                    
+                    // 檢查是否為發起人
+                    if (event.creatorId === this.currentUserId) {
+                        this.showNotification('發起人無法取消參與，請直接取消活動', 'error');
+                        return;
+                    }
+                    
+                    // 找到用戶在參與者列表中的位置
+                    const participantIndex = event.participants.indexOf(this.currentUserId);
+                    
+                    if (participantIndex === -1) {
+                        this.showNotification('您未參與此活動', 'error');
+                        return;
+                    }
+                    
+                    // 移除參與者
+                    event.participants.splice(participantIndex, 1);
+                    event.currentParticipants--;
+                    
+                    this.showNotification('已取消參與', 'success');
+                    this.renderEvents(this.events);
+                    
+                } catch (error) {
+                    this.showNotification('取消參與失敗', 'error');
+                }
+            }
+
+            /**
+             * 取消活動（僅發起人可用）
+             * @param {number} eventId - 活動ID
+             */
+            async cancelEvent(eventId) {
+                try {
+                    const eventIndex = this.events.findIndex(e => e.id === eventId);
+                    
+                    if (eventIndex === -1) {
+                        this.showNotification('活動不存在', 'error');
+                        return;
+                    }
+                    
+                    const event = this.events[eventIndex];
+                    
+                    // 檢查是否為發起人
+                    if (event.creatorId !== this.currentUserId) {
+                        this.showNotification('只有發起人可以取消活動', 'error');
+                        return;
+                    }
+                    
+                    // 確認取消
+                    if (!confirm('確定要取消這個活動嗎？此操作無法復原。')) {
+                        return;
+                    }
+                    
+                    
+                    // 移除活動
+                    this.events.splice(eventIndex, 1);
+                    this.showNotification('活動已取消', 'success');
+                    this.renderEvents(this.events);
+                } catch (error) {
+                    this.showNotification('取消活動失敗', 'error');
                 }
             }
 
@@ -691,8 +793,7 @@
              */
             renderEvents(events) {
                 const eventsList = document.getElementById('eventsList');
-                
-                // 如果沒有活動，顯示空狀態
+
                 if (events.length === 0) {
                     eventsList.innerHTML = `
                         <div class="empty-state">
@@ -704,8 +805,38 @@
                     return;
                 }
 
-                // 生成活動卡片HTML
-                eventsList.innerHTML = events.map(event => `
+                eventsList.innerHTML = events.map(event => {
+                    // 判斷是否已滿、是否已參加、是否是發起人
+                    const isFull = event.currentParticipants >= event.maxParticipants;
+                    const isJoined = event.participants && event.participants.includes(this.currentUserId);
+                    const isCreator = event.creatorId === this.currentUserId;
+
+                    let actionBtn = '';
+                    if (isCreator) {
+                        actionBtn = `
+                            <button class="btn btn-danger join-btn" onclick="event.stopPropagation(); app.cancelEvent(${event.id})">
+                                取消活動
+                            </button>
+                        `;
+                    } else if (isJoined) {
+                        actionBtn = `
+                            <button class="btn btn-secondary join-btn" onclick="event.stopPropagation(); app.leaveEvent(${event.id})">
+                                取消參與
+                            </button>
+                        `;
+                    } else if (!isFull) {
+                        actionBtn = `
+                            <button class="btn btn-primary join-btn" onclick="event.stopPropagation(); app.joinEvent(${event.id})">
+                                加入 +1
+                            </button>
+                        `;
+                    } else {
+                        actionBtn = `
+                            <span class="btn btn-secondary join-btn">已滿</span>
+                        `;
+                    }
+
+                    return `
                     <div class="event-card" onclick="app.showEventDetail(${event.id})">
                         <div class="event-header">
                             <span class="event-category">${event.category}</span>
@@ -736,16 +867,11 @@
                                 <span>👥</span>
                                 <span>${event.currentParticipants}/${event.maxParticipants}</span>
                             </div>
-                            ${event.currentParticipants < event.maxParticipants ? `
-                                <button class="btn btn-primary join-btn" onclick="event.stopPropagation(); app.joinEvent(${event.id})">
-                                    加入 +1
-                                </button>
-                            ` : `
-                                <span class="btn btn-secondary join-btn">已滿</span>
-                            `}
+                            ${actionBtn}
                         </div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
             }
 
             /**
@@ -760,7 +886,6 @@
              */
             hideCreateModal() {
                 document.getElementById('createModal').style.display = 'none';
-                // 清空表單
                 document.getElementById('createForm').reset();
             }
 
@@ -770,8 +895,7 @@
              */
             async handleCreateSubmit(e) {
                 e.preventDefault();
-                
-                // 取得表單資料
+
                 const formData = new FormData(e.target);
                 const eventData = {
                     title: formData.get('destination') || document.getElementById('destination').value,
@@ -789,7 +913,6 @@
                     if (result.success) {
                         this.showNotification('活動發起成功！', 'success');
                         this.hideCreateModal();
-                        // 修復問題1：發起活動後重新渲染活動列表
                         this.renderEvents(this.events);
                     } else {
                         this.showNotification('發起活動失敗', 'error');
@@ -806,6 +929,29 @@
             showEventDetail(eventId) {
                 const event = this.events.find(e => e.id === eventId);
                 if (!event) return;
+
+                const isFull = event.currentParticipants >= event.maxParticipants;
+                const isJoined = event.participants && event.participants.includes(this.currentUserId);
+                const isCreator = event.creatorId === this.currentUserId;
+
+                let actionBtn = '';
+                if (isCreator) {
+                    actionBtn = `
+                        <button class="btn btn-danger" onclick="app.cancelEvent(${event.id}); app.hideDetailModal();">取消活動</button>
+                    `;
+                } else if (isJoined) {
+                    actionBtn = `
+                        <button class="btn btn-secondary" onclick="app.leaveEvent(${event.id}); app.hideDetailModal();">取消參與</button>
+                    `;
+                } else if (!isFull) {
+                    actionBtn = `
+                        <button class="btn btn-primary" onclick="app.joinEvent(${event.id}); app.hideDetailModal();">加入活動</button>
+                    `;
+                } else {
+                    actionBtn = `
+                        <span class="btn btn-secondary">活動已滿</span>
+                    `;
+                }
 
                 const detailContent = document.getElementById('detailContent');
                 detailContent.innerHTML = `
@@ -842,11 +988,7 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        ${event.currentParticipants < event.maxParticipants ? `
-                            <button class="btn btn-primary" onclick="app.joinEvent(${event.id}); app.hideDetailModal();">加入活動</button>
-                        ` : `
-                            <span class="btn btn-secondary">活動已滿</span>
-                        `}
+                        ${actionBtn}
                         <button class="btn btn-secondary" onclick="app.hideDetailModal()">關閉</button>
                     </div>
                 `;
@@ -870,12 +1012,10 @@
 
                 let filteredEvents = this.events;
 
-                // 按類別篩選
                 if (categoryFilter) {
                     filteredEvents = filteredEvents.filter(event => event.category === categoryFilter);
                 }
 
-                // 按時間篩選
                 if (timeFilter) {
                     const filterDate = new Date(timeFilter);
                     filteredEvents = filteredEvents.filter(event => {
@@ -907,19 +1047,16 @@
              * @param {string} type - 通知類型 ('success' 或 'error')
              */
             showNotification(message, type = 'success') {
-                // 移除現有通知
                 const existingNotification = document.querySelector('.notification');
                 if (existingNotification) {
                     existingNotification.remove();
                 }
 
-                // 建立新通知
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
                 notification.textContent = message;
                 document.body.appendChild(notification);
 
-                // 3秒後自動移除通知
                 setTimeout(() => {
                     notification.remove();
                 }, 3000);
