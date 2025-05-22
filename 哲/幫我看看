@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>相約系統</title>
+    <style>
+        /* ========== 全域重置和基礎樣式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* 讓邊框和內距包含在元素總寬度內 */
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            /* 設定漸層背景色 */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; /* 確保頁面至少佔滿整個視窗高度 */
+            color: #333;
+        }
+
+        /* ========== 主要容器樣式 ========== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto; /* 水平置中 */
+            padding: 0 15px;
+            min-height: 100vh;
+        }
+
+        /* ========== 頁面標題區域 ========== */
+        .header {
+            background: rgba(255, 255, 255, 0.95); /* 半透明白色背景 */
+            backdrop-filter: blur(10px); /* 背景模糊效果 */
+            padding: 1rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #764ba2;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* ========== 控制面板樣式 ========== */
+        .control-panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px; /* 元素間距 */
+            flex-wrap: wrap; /* 允許換行 */
+            align-items: center;
+        }
+
+        /* ========== 按鈕基礎樣式 ========== */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px; /* 圓角按鈕 */
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease; /* 平滑過渡效果 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 主要按鈕樣式（漸層藍紫色） */
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px); /* 懸停時向上移動 */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 次要按鈕樣式（灰色） */
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        /* 危險按鈕樣式（紅色） */
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        /* ========== 表單控制項樣式 ========== */
+        .select-dropdown, .time-input {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        /* ========== 活動列表網格佈局 ========== */
+        .events-list {
+            display: grid;
+            /* 響應式網格：每列最少300px寬度，自動填滿 */
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem; /* 網格間距 */
+            margin-bottom: 2rem;
+        }
+
+        /* ========== 活動卡片樣式 ========== */
+        .event-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer; /* 滑鼠指標變成手型 */
+        }
+
+        /* 卡片懸停效果 */
+        .event-card:hover {
+            transform: translateY(-5px); /* 向上浮起效果 */
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 活動卡片頭部區域 */
+        .event-header {
+            display: flex;
+            justify-content: space-between; /* 兩端對齊 */
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        /* 活動類別標籤 */
+        .event-category {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* 活動時間顯示 */
+        .event-time {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* ========== 活動詳情區域 ========== */
+        .event-details {
+            margin-bottom: 1rem;
+        }
+
+        /* 每個詳情項目 */
+        .event-detail-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* 詳情標籤（如：活動、出發等） */
+        .event-detail-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 80px; /* 固定寬度讓對齊更整齊 */
+        }
+
+        /* 詳情值 */
+        .event-detail-value {
+            color: #777;
+            flex: 1; /* 佔據剩餘空間 */
+        }
+
+        /* ========== 活動卡片底部 ========== */
+        .event-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #eee; /* 上邊框分隔線 */
+        }
+
+        /* 參與人數顯示 */
+        .participant-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* 加入按鈕（小型） */
+        .join-btn {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* ========== 彈出視窗樣式 ========== */
+        .modal {
+            display: none; /* 預設隱藏 */
+            position: fixed;
+            z-index: 1000; /* 確保在最上層 */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明遮罩 */
+            backdrop-filter: blur(5px); /* 背景模糊 */
+        }
+
+        /* 彈窗內容容器 */
+        .modal-content {
+            background: white;
+            margin: 5% auto; /* 垂直置中 */
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh; /* 最大高度不超過視窗90% */
+            overflow-y: auto; /* 內容過多時可滾動 */
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ========== 彈窗標題區域 ========== */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px 20px 0 0; /* 只有上方圓角 */
+        }
+
+        /* 關閉按鈕 */
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* ========== 表單群組樣式 ========== */
+        .form-group {
+            margin-bottom: 1.5rem;
+            padding: 0 1.5rem;
+        }
+
+        /* 第一個表單群組需要上方內距 */
+        .form-group:first-child {
+            padding-top: 1.5rem;
+        }
+
+        /* 表單標籤 */
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* 表單輸入框樣式 */
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        /* ========== 表單操作區域 ========== */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end; /* 靠右對齊 */
+            gap: 15px;
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px; /* 只有下方圓角 */
+        }
+
+        /* ========== 通知訊息樣式 ========== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1001; /* 在彈窗之上 */
+            max-width: 300px;
+        }
+
+        /* 成功通知（綠色邊框） */
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+
+        /* 錯誤通知（紅色邊框） */
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+
+        /* ========== 載入動畫樣式 ========== */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* 旋轉動畫的圓圈 */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea; /* 只有頂部有顏色 */
+            border-radius: 50%; /* 圓形 */
+            animation: spin 1s linear infinite; /* 持續旋轉 */
+        }
+
+        /* 旋轉關鍵幀動畫 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ========== 空狀態樣式 ========== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+
+        /* ========== 響應式設計 ========== */
+        @media (max-width: 768px) {
+            /* 手機版：控制面板改為垂直排列 */
+            .control-panel {
+                flex-direction: column;
+                align-items: stretch; /* 元素填滿寬度 */
+            }
+            
+            /* 手機版：活動列表改為單列 */
+            .events-list {
+                grid-template-columns: 1fr;
+            }
+            
+            /* 手機版：彈窗佔更多寬度 */
+            .modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 頁面標題 -->
+        <header class="header">
+            <h1>相約系統</h1>
+        </header>
+
+        <main>
+            <!-- 控制面板：包含發起活動、篩選等功能 -->
+            <div class="control-panel">
+                <button id="createBtn" class="btn btn-primary">發起活動</button>
+                <!-- 類別篩選下拉選單 -->
+                <select id="categoryFilter" class="select-dropdown">
+                    <option value="">所有類別</option>
+                    <option value="美食">美食</option>
+                    <option value="運動">運動</option>
+                    <option value="娛樂">娛樂</option>
+                    <option value="學習">學習</option>
+                    <option value="其他">其他</option>
+                </select>
+                <!-- 時間篩選輸入框 -->
+                <input type="datetime-local" id="timeFilter" class="time-input">
+                <button id="filterBtn" class="btn btn-secondary">篩選</button>
+                <button id="refreshBtn" class="btn btn-secondary">重新載入</button>
+            </div>
+
+            <!-- 活動列表容器 -->
+            <div id="eventsList" class="events-list">
+                <!-- 初始載入動畫 -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========== 發起活動彈窗 ========== -->
+    <div id="createModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>發起活動</h2>
+                <span class="close" id="closeCreate">&times;</span>
+            </div>
+            <form id="createForm">
+                <!-- 活動時間選擇 -->
+                <div class="form-group">
+                    <label>活動時間:</label>
+                    <input type="datetime-local" id="eventTime" required>
+                </div>
+                <!-- 出發地點輸入 -->
+                <div class="form-group">
+                    <label>出發地點:</label>
+                    <input type="text" id="startLocation" placeholder="例如：台北車站" required>
+                </div>
+                <!-- 目的地輸入 -->
+                <div class="form-group">
+                    <label>目的地:</label>
+                    <input type="text" id="destination" placeholder="例如：某某餐廳" required>
+                </div>
+                <!-- 活動類別選擇 -->
+                <div class="form-group">
+                    <label>活動類別:</label>
+                    <select id="eventCategory" required>
+                        <option value="">選擇類別</option>
+                        <option value="美食">美食</option>
+                        <option value="運動">運動</option>
+                        <option value="娛樂">娛樂</option>
+                        <option value="學習">學習</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <!-- 人數上限設定 -->
+                <div class="form-group">
+                    <label>人數上限:</label>
+                    <input type="number" id="maxParticipants" min="2" max="20" value="4">
+                </div>
+                <!-- 活動描述 -->
+                <div class="form-group">
+                    <label>備註說明:</label>
+                    <textarea id="description" placeholder="活動詳細說明或特殊要求"></textarea>
+                </div>
+                <!-- 聯絡方式 -->
+                <div class="form-group">
+                    <label>聯絡方式:</label>
+                    <input type="text" id="contact" placeholder="電話或Line ID" required>
+                </div>
+                <!-- 表單操作按鈕 -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">發起活動</button>
+                    <button type="button" id="cancelCreate" class="btn btn-secondary">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== 活動詳情彈窗 ========== -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>活動詳情</h2>
+                <span class="close" id="closeDetail">&times;</span>
+            </div>
+            <!-- 詳情內容將由JavaScript動態生成 -->
+            <div id="detailContent">
+                <!-- 動態內容 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * 相約系統主類別
+         * 負責管理整個應用程式的功能
+         */
+        class AppointmentSystem {
+            /**
+             * 建構函式：初始化系統
+             */
+            constructor() {
+                // API基礎URL設定（實際使用時需要替換為真實的API地址）
+                this.apiBaseUrl = 'https://your-api-domain.com/api';
+                // 儲存所有活動的陣列
+                this.events = [];
+                // 初始化系統
+                this.init();
+            }
+
+            /**
+             * 初始化系統：設定事件監聽器並載入活動
+             */
+            init() {
+                this.setupEventListeners();
+                this.loadEvents();
+            }
+
+            /**
+             * 設定所有事件監聽器
+             * 包括按鈕點擊、表單提交、彈窗關閉等事件
+             */
+            setupEventListeners() {
+                // 發起活動按鈕
+                document.getElementById('createBtn').addEventListener('click', () => this.showCreateModal());
+                
+                // 發起活動彈窗的關閉事件
+                document.getElementById('closeCreate').addEventListener('click', () => this.hideCreateModal());
+                document.getElementById('cancelCreate').addEventListener('click', () => this.hideCreateModal());
+                
+                // 發起活動表單提交事件
+                document.getElementById('createForm').addEventListener('submit', (e) => this.handleCreateSubmit(e));
+                
+                // 活動詳情彈窗關閉事件
+                document.getElementById('closeDetail').addEventListener('click', () => this.hideDetailModal());
+                
+                // 篩選和重新載入按鈕
+                document.getElementById('filterBtn').addEventListener('click', () => this.filterEvents());
+                document.getElementById('refreshBtn').addEventListener('click', () => this.loadEvents());
+                
+                // 點擊彈窗外部區域關閉彈窗
+                window.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal')) {
+                        e.target.style.display = 'none';
+                    }
+                });
+            }
+
+            /**
+             * 從API載入活動資料
+             * 目前使用模擬資料，實際使用時需要連接真實API
+             */
+            async loadEvents() {
+                try {
+                    // 顯示載入動畫
+                    this.showLoading();
+                    
+                    // 實際API調用範例（註解掉的部分）
+                    // const response = await fetch(`${this.apiBaseUrl}/events`);
+                    // const events = await response.json();
+                    
+                    // 使用模擬資料
+                    const events = await this.getMockEvents();
+                    
+                    // 更新本地活動陣列並渲染到頁面
+                    this.events = events;
+                    this.renderEvents(events);
+                } catch (error) {
+                    console.error('載入活動失敗:', error);
+                    this.showNotification('載入活動失敗', 'error');
+                    this.renderEvents([]); // 渲染空列表
+                }
+            }
+
+            /**
+             * 取得模擬活動資料
+             * 實際使用時應該刪除此函式，直接使用API
+             * @returns {Promise} 回傳包含活動資料的Promise
+             */
+            async getMockEvents() {
+                return new Promise(resolve => {
+                    // 模擬API延遲
+                    setTimeout(() => {
+                        resolve([
+                            {
+                                id: 1,
+                                title: '西門町美食之旅',
+                                category: '美食',
+                                time: '2025-05-25T19:00',
+                                startLocation: '台北車站',
+                                destination: '西門町',
+                                description: '一起去西門町吃美食！',
+                                maxParticipants: 4,
+                                currentParticipants: 2,
+                                contact: 'Line: foodlover123',
+                                createdAt: '2025-05-22T10:00:00'
+                            },
+                            {
+                                id: 2,
+                                title: '信義區電影約會',
+                                category: '娛樂',
+                                time: '2025-05-26T15:00',
+                                startLocation: '市政府站',
+                                destination: '信義威秀',
+                                description: '看最新上映的電影',
+                                maxParticipants: 6,
+                                currentParticipants: 3,
+                                contact: '0912-345-678',
+                                createdAt: '2025-05-22T14:30:00'
+                            }
+                        ]);
+                    }, 1000); // 1秒延遲模擬網路請求
+                });
+            }
+
+            /**
+             * 建立新活動
+             * @param {Object} eventData - 活動資料物件
+             * @returns {Promise} API回應結果
+             */
+            async createEvent(eventData) {
+                try {
+                    // 實際API調用範例（註解掉的部分）
+                    // const response = await fetch(`${this.apiBaseUrl}/events`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //     },
+                    //     body: JSON.stringify(eventData)
+                    // });
+                    // const result = await response.json();
+                    
+                    // 模擬API回應
+                    const result = {
+                        success: true,
+                        id: Date.now(), // 使用時間戳作為ID
+                        message: '活動發起成功'
+                    };
+                    
+                    return result;
+                } catch (error) {
+                    throw new Error('發起活動失敗');
+                }
+            }
+
+            /**
+             * 加入活動
+             * @param {number} eventId - 活動ID
+             */
+            async joinEvent(eventId) {
+                try {
+                    // 實際API調用範例（註解掉的部分）
+                    // const response = await fetch(`${this.apiBaseUrl}/events/${eventId}/join`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //     }
+                    // });
+                    // const result = await response.json();
+                    
+                    // 模擬加入活動邏輯
+                    const event = this.events.find(e => e.id === eventId);
+                    if (event && event.currentParticipants < event.maxParticipants) {
+                        event.currentParticipants++; // 增加參與人數
+                        this.showNotification('成功加入活動！', 'success');
+                        this.renderEvents(this.events); // 重新渲染活動列表
+                    } else {
+                        this.showNotification('活動已滿或不存在', 'error');
+                    }
+                } catch (error) {
+                    this.showNotification('加入活動失敗', 'error');
+                }
+            }
+
+            /**
+             * 顯示載入動畫
+             */
+            showLoading() {
+                document.getElementById('eventsList').innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                `;
+            }
+
+            /**
+             * 渲染活動列表到頁面
+             * @param {Array} events - 活動陣列
+             */
+            renderEvents(events) {
+                const eventsList = document.getElementById('eventsList');
+                
+                // 如果沒有活動，顯示空狀態
+                if (events.length === 0) {
+                    eventsList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>暫無活動</h3>
+                            <p>目前沒有活動，發起一個新活動吧！</p>
+                            <button class="btn btn-primary" onclick="app.showCreateModal()">發起活動</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 生成活動卡片HTML
+                eventsList.innerHTML = events.map(event => `
+                    <div class="event-card" onclick="app.showEventDetail(${event.id})">
+                        <div class="event-header">
+                            <span class="event-category">${event.category}</span>
+                            <span class="event-time">${this.formatDateTime(event.time)}</span>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-detail-item">
+                                <span class="event-detail-label">活動:</span>
+                                <span class="event-detail-value">${event.title || event.destination}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-label">出發:</span>
+                                <span class="event-detail-value">${event.startLocation}</span>
+                            </div>
+                            <div class="event-detail-item">
+                                <span class="event-detail-label">目的地:</span>
+                                <span class="event-detail-value">${event.destination}</span>
+                            </div>
+                            ${event.description ? `
+                            <div class="event-detail-item">
+                                <span class="event-detail-label">說明:</span>
+                                <span class="event-detail-value">${event.description}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <div class="event-footer">
+                            <div class="participant-count">
+                                <span>👥</span>
+                                <span>${event.currentParticipants}/${event.maxParticipants}</span>
+                            </div>
+                            ${event.currentParticipants < event.maxParticipants ? `
+                                <button class="btn btn-primary join-btn" onclick="event.stopPropagation(); app.joinEvent(${event.id})">
+                                    加入 +1
+                                </button>
+                            ` : `
+                                <span class="btn btn-secondary join-btn">已滿</span>
+                            `}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            /**
+             * 格式化日期時間顯示
+             * @param {string} dateTime - ISO日期時間字串
+             * @returns {string} 格式化後的日期時間（MM/DD HH:MM）
+             */
+            formatDateTime(dateTime) {
+                const date = new Date(dateTime);
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${month}/${day} ${hours}:${minutes}`;
+            }
+
+            /**
+             * 顯示發起活動彈窗
+             */
+            showCreateModal() {
+                document.getElementById('createModal').style.display = 'block';
+                // 設置預設時間為當前時間+1小時
+                const now = new Date();
+                now.setHours(now.getHours() + 1);
+                document.getElementById('eventTime').value = now.toISOString().slice(0, 16);
+            }
+
+            hideCreateModal() {
+                document.getElementById('createModal').style.display = 'none';
+                document.getElementById('createForm').reset();
+            }
+
+            async handleCreateSubmit(e) {
+                e.preventDefault();
+                
+                const eventData = {
+                    title: document.getElementById('destination').value,
+                    time: document.getElementById('eventTime').value,
+                    startLocation: document.getElementById('startLocation').value,
+                    destination: document.getElementById('destination').value,
+                    category: document.getElementById('eventCategory').value,
+                    maxParticipants: parseInt(document.getElementById('maxParticipants').value),
+                    description: document.getElementById('description').value,
+                    contact: document.getElementById('contact').value
+                };
+
+                try {
+                    const result = await this.createEvent(eventData);
+                    if (result.success) {
+                        this.hideCreateModal();
+                        this.showNotification('活動發起成功！', 'success');
+                        this.loadEvents();
+                    }
+                } catch (error) {
+                    this.showNotification('發起活動失敗', 'error');
+                }
+            }
+
+            showEventDetail(eventId) {
+                const event = this.events.find(e => e.id === eventId);
+                if (!event) return;
+
+                const content = `
+                    <div style="padding: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem; color: #333;">${event.title || event.destination}</h3>
+                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
+                            <span class="event-detail-label">時間:</span>
+                            <span class="event-detail-value">${this.formatDateTime(event.time)}</span>
+                        </div>
+                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
+                            <span class="event-detail-label">類別:</span>
+                            <span class="event-detail-value">${event.category}</span>
+                        </div>
+                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
+                            <span class="event-detail-label">出發地:</span>
+                            <span class="event-detail-value">${event.startLocation}</span>
+                        </div>
+                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
+                            <span class="event-detail-label">目的地:</span>
+                            <span class="event-detail-value">${event.destination}</span>
+                        </div>
+                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
+                            <span class="event-detail-label">人數:</span>
+                            <span class="event-detail-value">${event.currentParticipants}/${event.maxParticipants}</span>
+                        </div>
+                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
+                            <span class="event-detail-label">聯絡方式:</span>
+                            <span class="event-detail-value">${event.contact}</span>
+                        </div>
+                        ${event.description ? `
+                        <div class="event-detail-item" style="margin-bottom: 1rem;">
+                            <span class="event-detail-label">活動說明:</span>
+                            <span class="event-detail-value">${event.description}</span>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="text-align: center; margin-top: 2rem;">
+                            ${event.currentParticipants < event.maxParticipants ? `
+                                <button class="btn btn-primary" onclick="app.joinEvent(${event.id}); app.hideDetailModal();">
+                                    我要參加
+                                </button>
+                            ` : `
+                                <p style="color: #666;">此活動已滿</p>
+                            `}
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('detailContent').innerHTML = content;
+                document.getElementById('detailModal').style.display = 'block';
+            }
+
+            hideDetailModal() {
+                document.getElementById('detailModal').style.display = 'none';
+            }
+
+            filterEvents() {
+                const category = document.getElementById('categoryFilter').value;
+                const timeFilter = document.getElementById('timeFilter').value;
+                
+                let filteredEvents = [...this.events];
+                
+                if (category) {
+                    filteredEvents = filteredEvents.filter(event => event.category === category);
+                }
+                
+                if (timeFilter) {
+                    const filterDate = new Date(timeFilter);
+                    filteredEvents = filteredEvents.filter(event => {
+                        const eventDate = new Date(event.time);
+                        return eventDate >= filterDate;
+                    });
+                }
+                
+                this.renderEvents(filteredEvents);
+            }
+
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // 初始化應用
+        const app = new AppointmentSystem();
+        window.app = app;
+    </script>
+</body>
+</html>
