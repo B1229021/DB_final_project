@@ -76,7 +76,7 @@ INSERT INTO `categories` (`categories_id`, `content`) VALUES
 CREATE TABLE `event` (
   `categories_id` int(4) NOT NULL,
   `event_id` int(4) NOT NULL,
-  `content` varchar(10) NOT NULL
+  `content` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
