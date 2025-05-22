@@ -540,6 +540,10 @@
                     // 顯示載入動畫
                     this.showLoading();
                     
+                    // 重置篩選器 - 修正問題2：重新載入時清空時間篩選
+                    document.getElementById('categoryFilter').value = '';
+                    document.getElementById('timeFilter').value = '';
+                    
                     // 實際API調用範例（註解掉的部分）
                     // const response = await fetch(`${this.apiBaseUrl}/events`);
                     // const events = await response.json();
@@ -621,6 +625,19 @@
                         id: Date.now(), // 使用時間戳作為ID
                         message: '活動發起成功'
                     };
+                    
+                    // 修正問題1：將新建的活動添加到本地活動陣列
+                    if (result.success) {
+                        const newEvent = {
+                            ...eventData,
+                            id: result.id,
+                            currentParticipants: 1, // 發起人自動成為第一個參與者
+                            createdAt: new Date().toISOString()
+                        };
+                        
+                        // 將新活動添加到活動陣列的開頭（最新的在最前面）
+                        this.events.unshift(newEvent);
+                    }
                     
                     return result;
                 } catch (error) {
@@ -732,129 +749,133 @@
             }
 
             /**
-             * 格式化日期時間顯示
-             * @param {string} dateTime - ISO日期時間字串
-             * @returns {string} 格式化後的日期時間（MM/DD HH:MM）
-             */
-            formatDateTime(dateTime) {
-                const date = new Date(dateTime);
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                const hours = date.getHours().toString().padStart(2, '0');
-                const minutes = date.getMinutes().toString().padStart(2, '0');
-                return `${month}/${day} ${hours}:${minutes}`;
-            }
-
-            /**
              * 顯示發起活動彈窗
              */
             showCreateModal() {
                 document.getElementById('createModal').style.display = 'block';
-                // 設置預設時間為當前時間+1小時
-                const now = new Date();
-                now.setHours(now.getHours() + 1);
-                document.getElementById('eventTime').value = now.toISOString().slice(0, 16);
             }
 
+            /**
+             * 隱藏發起活動彈窗
+             */
             hideCreateModal() {
                 document.getElementById('createModal').style.display = 'none';
+                // 清空表單
                 document.getElementById('createForm').reset();
             }
 
+            /**
+             * 處理發起活動表單提交
+             * @param {Event} e - 表單提交事件
+             */
             async handleCreateSubmit(e) {
                 e.preventDefault();
                 
+                // 取得表單資料
+                const formData = new FormData(e.target);
                 const eventData = {
-                    title: document.getElementById('destination').value,
+                    title: formData.get('destination') || document.getElementById('destination').value,
+                    category: document.getElementById('eventCategory').value,
                     time: document.getElementById('eventTime').value,
                     startLocation: document.getElementById('startLocation').value,
                     destination: document.getElementById('destination').value,
-                    category: document.getElementById('eventCategory').value,
-                    maxParticipants: parseInt(document.getElementById('maxParticipants').value),
                     description: document.getElementById('description').value,
+                    maxParticipants: parseInt(document.getElementById('maxParticipants').value),
                     contact: document.getElementById('contact').value
                 };
 
                 try {
                     const result = await this.createEvent(eventData);
                     if (result.success) {
-                        this.hideCreateModal();
                         this.showNotification('活動發起成功！', 'success');
-                        this.loadEvents();
+                        this.hideCreateModal();
+                        // 修復問題1：發起活動後重新渲染活動列表
+                        this.renderEvents(this.events);
+                    } else {
+                        this.showNotification('發起活動失敗', 'error');
                     }
                 } catch (error) {
                     this.showNotification('發起活動失敗', 'error');
                 }
             }
 
+            /**
+             * 顯示活動詳情彈窗
+             * @param {number} eventId - 活動ID
+             */
             showEventDetail(eventId) {
                 const event = this.events.find(e => e.id === eventId);
                 if (!event) return;
 
-                const content = `
+                const detailContent = document.getElementById('detailContent');
+                detailContent.innerHTML = `
                     <div style="padding: 1.5rem;">
-                        <h3 style="margin-bottom: 1rem; color: #333;">${event.title || event.destination}</h3>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">時間:</span>
+                        <div class="event-detail-item">
+                            <span class="event-detail-label">活動時間:</span>
                             <span class="event-detail-value">${this.formatDateTime(event.time)}</span>
                         </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">類別:</span>
-                            <span class="event-detail-value">${event.category}</span>
-                        </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">出發地:</span>
+                        <div class="event-detail-item">
+                            <span class="event-detail-label">出發地點:</span>
                             <span class="event-detail-value">${event.startLocation}</span>
                         </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
+                        <div class="event-detail-item">
                             <span class="event-detail-label">目的地:</span>
                             <span class="event-detail-value">${event.destination}</span>
                         </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
+                        <div class="event-detail-item">
+                            <span class="event-detail-label">活動類別:</span>
+                            <span class="event-detail-value">${event.category}</span>
+                        </div>
+                        <div class="event-detail-item">
                             <span class="event-detail-label">人數:</span>
                             <span class="event-detail-value">${event.currentParticipants}/${event.maxParticipants}</span>
                         </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">聯絡方式:</span>
-                            <span class="event-detail-value">${event.contact}</span>
-                        </div>
                         ${event.description ? `
-                        <div class="event-detail-item" style="margin-bottom: 1rem;">
-                            <span class="event-detail-label">活動說明:</span>
+                        <div class="event-detail-item">
+                            <span class="event-detail-label">備註說明:</span>
                             <span class="event-detail-value">${event.description}</span>
                         </div>
                         ` : ''}
-                        
-                        <div style="text-align: center; margin-top: 2rem;">
-                            ${event.currentParticipants < event.maxParticipants ? `
-                                <button class="btn btn-primary" onclick="app.joinEvent(${event.id}); app.hideDetailModal();">
-                                    我要參加
-                                </button>
-                            ` : `
-                                <p style="color: #666;">此活動已滿</p>
-                            `}
+                        <div class="event-detail-item">
+                            <span class="event-detail-label">聯絡方式:</span>
+                            <span class="event-detail-value">${event.contact}</span>
                         </div>
+                    </div>
+                    <div class="form-actions">
+                        ${event.currentParticipants < event.maxParticipants ? `
+                            <button class="btn btn-primary" onclick="app.joinEvent(${event.id}); app.hideDetailModal();">加入活動</button>
+                        ` : `
+                            <span class="btn btn-secondary">活動已滿</span>
+                        `}
+                        <button class="btn btn-secondary" onclick="app.hideDetailModal()">關閉</button>
                     </div>
                 `;
 
-                document.getElementById('detailContent').innerHTML = content;
                 document.getElementById('detailModal').style.display = 'block';
             }
 
+            /**
+             * 隱藏活動詳情彈窗
+             */
             hideDetailModal() {
                 document.getElementById('detailModal').style.display = 'none';
             }
 
+            /**
+             * 篩選活動
+             */
             filterEvents() {
-                const category = document.getElementById('categoryFilter').value;
+                const categoryFilter = document.getElementById('categoryFilter').value;
                 const timeFilter = document.getElementById('timeFilter').value;
-                
-                let filteredEvents = [...this.events];
-                
-                if (category) {
-                    filteredEvents = filteredEvents.filter(event => event.category === category);
+
+                let filteredEvents = this.events;
+
+                // 按類別篩選
+                if (categoryFilter) {
+                    filteredEvents = filteredEvents.filter(event => event.category === categoryFilter);
                 }
-                
+
+                // 按時間篩選
                 if (timeFilter) {
                     const filterDate = new Date(timeFilter);
                     filteredEvents = filteredEvents.filter(event => {
@@ -862,26 +883,51 @@
                         return eventDate >= filterDate;
                     });
                 }
-                
+
                 this.renderEvents(filteredEvents);
             }
 
+            /**
+             * 格式化日期時間顯示
+             * @param {string} dateTimeString - ISO日期時間字串
+             * @returns {string} 格式化後的日期時間
+             */
+            formatDateTime(dateTimeString) {
+                const date = new Date(dateTimeString);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${month}/${day} ${hours}:${minutes}`;
+            }
+
+            /**
+             * 顯示通知訊息
+             * @param {string} message - 通知內容
+             * @param {string} type - 通知類型 ('success' 或 'error')
+             */
             showNotification(message, type = 'success') {
+                // 移除現有通知
+                const existingNotification = document.querySelector('.notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
+
+                // 建立新通知
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
                 notification.textContent = message;
-                
                 document.body.appendChild(notification);
-                
+
+                // 3秒後自動移除通知
                 setTimeout(() => {
                     notification.remove();
                 }, 3000);
             }
         }
 
-        // 初始化應用
+        // 初始化應用程式
         const app = new AppointmentSystem();
-        window.app = app;
     </script>
 </body>
 </html>
