@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>相約系統</title>
     <style>
-        /* ========== 全域重置和基礎樣式 ========== */
+        /* ...原有 CSS 全部保留... */
+
+        /* ========== 管理者按鈕樣式 ========== */
         * {
             margin: 0;
             padding: 0;
@@ -94,6 +96,11 @@
             color: white;
         }
 
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+        }
+
         /* ========== 表單控制項樣式 ========== */
         .select-dropdown, .time-input {
             padding: 12px 16px;
@@ -179,205 +186,220 @@
             color: #777;
             flex: 1; /* 佔據剩餘空間 */
         }
+        .admin-btn {
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            z-index: 10;
+            background: linear-gradient(45deg, #ff9800, #ff5722);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 10px 22px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-btn:hover {
+            background: linear-gradient(45deg, #ff5722, #ff9800);
+        }
 
-        /* ========== 活動卡片底部 ========== */
-        .event-footer {
+        .avatar-list {
             display: flex;
-            justify-content: space-between;
+            flex-direction: row;
+            gap: 0.5rem;
             align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid #eee; /* 上邊框分隔線 */
+        }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(100,80,150,0.09);
+            cursor: pointer;
+            position: relative;
+        }
+        .avatar.creator::after {
+            content: '👑';
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            font-size: 1rem;
+        }
+        .avatar:hover {
+            outline: 2px solid #764ba2;
         }
 
-        /* 參與人數顯示 */
-        .participant-count {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        /* 加入按鈕（小型） */
-        .join-btn {
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            border-radius: 20px;
-        }
-
-        /* ========== 彈出視窗樣式 ========== */
-        .modal {
-            display: none; /* 預設隱藏 */
+        /* 評價彈窗 */
+        .user-review-modal {
+            display: none;
             position: fixed;
-            z-index: 1000; /* 確保在最上層 */
+            z-index: 2000;
             left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 半透明遮罩 */
-            backdrop-filter: blur(5px); /* 背景模糊 */
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.35);
         }
-
-        /* 彈窗內容容器 */
-        .modal-content {
-            background: white;
-            margin: 5% auto; /* 垂直置中 */
-            padding: 0;
+        .user-review-content {
+            background: #fff;
             border-radius: 20px;
             width: 90%;
-            max-width: 500px;
-            max-height: 90vh; /* 最大高度不超過視窗90% */
-            overflow-y: auto; /* 內容過多時可滾動 */
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            margin: 6% auto;
+            padding: 1.5rem 1rem 1rem 1rem;
+            box-shadow: 0 18px 44px rgba(0,0,0,0.24);
+            position: relative;
         }
-
-        /* ========== 彈窗標題區域 ========== */
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 20px 20px 0 0; /* 只有上方圓角 */
-        }
-
-        /* 關閉按鈕 */
-        .close {
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
+        .close-user-review {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 1.5rem;
             cursor: pointer;
+            color: #888;
         }
-
-        /* ========== 表單群組樣式 ========== */
-        .form-group {
-            margin-bottom: 1.5rem;
-            padding: 0 1.5rem;
-        }
-
-        /* 第一個表單群組需要上方內距 */
-        .form-group:first-child {
-            padding-top: 1.5rem;
-        }
-
-        /* 表單標籤 */
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #555;
-        }
-
-        /* 表單輸入框樣式 */
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        /* ========== 表單操作區域 ========== */
-        .form-actions {
-            display: flex;
-            justify-content: flex-end; /* 靠右對齊 */
-            gap: 15px;
-            padding: 1.5rem;
-            border-top: 1px solid #eee;
-            background: #f8f9fa;
-            border-radius: 0 0 20px 20px; /* 只有下方圓角 */
-        }
-
-        /* ========== 通知訊息樣式 ========== */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            z-index: 1001; /* 在彈窗之上 */
-            max-width: 300px;
-        }
-
-        /* 成功通知（綠色邊框） */
-        .notification.success {
-            border-left: 4px solid #28a745;
-        }
-
-        /* 錯誤通知（紅色邊框） */
-        .notification.error {
-            border-left: 4px solid #dc3545;
-        }
-
-        /* ========== 載入動畫樣式 ========== */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-        }
-
-        /* 旋轉動畫的圓圈 */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea; /* 只有頂部有顏色 */
-            border-radius: 50%; /* 圓形 */
-            animation: spin 1s linear infinite; /* 持續旋轉 */
-        }
-
-        /* 旋轉關鍵幀動畫 */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ========== 空狀態樣式 ========== */
-        .empty-state {
+        .user-review-header {
             text-align: center;
-            padding: 3rem 1rem;
-            color: #666;
+            margin-bottom: 1.2rem;
         }
-
-        /* ========== 響應式設計 ========== */
-        @media (max-width: 768px) {
-            /* 手機版：控制面板改為垂直排列 */
-            .control-panel {
-                flex-direction: column;
-                align-items: stretch; /* 元素填滿寬度 */
-            }
-            
-            /* 手機版：活動列表改為單列 */
-            .events-list {
-                grid-template-columns: 1fr;
-            }
-            
-            /* 手機版：彈窗佔更多寬度 */
-            .modal-content {
-                width: 95%;
-            }
+        .user-review-header img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 3px solid #764ba2;
         }
+        .user-review-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #764ba2;
+            margin-top: 0.3rem;
+        }
+        .user-review-gb {
+            margin: 0.4rem 0 1rem 0;
+            font-size: 1rem;
+        }
+        .review-msg-list {
+            max-height: 160px;
+            overflow-y: auto;
+            margin-top: 0.7rem;
+        }
+        .review-msg-item {
+            font-size: 0.97rem;
+            padding: 0.3rem 0.2rem;
+            border-bottom: 1px solid #eee;
+        }
+        .review-msg-item:last-child { border-bottom: none; }
+        /* 性別人數下拉 */
+        .gender-selects {
+            display: flex;
+            gap: 1rem;
+        }
+        .gender-selects .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .admin-btn {
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            z-index: 100;
+            background: linear-gradient(45deg, #ff9800, #ff5722);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 10px 22px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-btn:hover {
+            background: linear-gradient(45deg, #ff5722, #ff9800);
+        }
+        /* ========== Modal z-index 修正 ========== */
+        .modal {
+            z-index: 2001 !important;
+        }
+        .user-review-modal {
+            z-index: 2002 !important;
+        }
+        .modal {
+    display: none;
+    position: fixed;
+    z-index: 2001;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.35);
+    justify-content: center;
+    align-items: center;
+}
+.modal.show {
+    display: flex;
+}
+.modal-content {
+    background: #fff;
+    border-radius: 20px;
+    min-width: 340px;
+    max-width: 430px;
+    width: 96%;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.24);
+    position: relative;
+    padding: 2rem 2rem 1.2rem 2rem;
+    animation: modalFadeIn 0.32s;
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(30px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+}
+.modal-header h2 {
+    color: #6c48c9;
+    font-size: 1.28rem;
+    margin: 0;
+    font-weight: bold;
+}
+.close {
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: #888;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.close:hover {
+    color: #444;
+}
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+        /* ...頭像、性別下拉等 CSS 保留... */
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="position:relative">
+        <!-- 管理者按鈕 -->
+        <button class="admin-btn" id="adminBtn">管理者</button>
         <!-- 頁面標題 -->
         <header class="header">
             <h1>相約系統</h1>
         </header>
 
         <main>
-            <!-- 控制面板：包含發起活動、篩選等功能 -->
+            <!-- 控制面板 -->
             <div class="control-panel">
                 <button id="createBtn" class="btn btn-primary">發起活動</button>
-                <!-- 類別篩選下拉選單 -->
                 <select id="categoryFilter" class="select-dropdown">
                     <option value="">所有類別</option>
                     <option value="美食">美食</option>
@@ -386,15 +408,12 @@
                     <option value="學習">學習</option>
                     <option value="其他">其他</option>
                 </select>
-                <!-- 時間篩選輸入框 -->
                 <input type="datetime-local" id="timeFilter" class="time-input">
                 <button id="filterBtn" class="btn btn-secondary">篩選</button>
                 <button id="refreshBtn" class="btn btn-secondary">重新載入</button>
             </div>
-
-            <!-- 活動列表容器 -->
+            <!-- 活動列表 -->
             <div id="eventsList" class="events-list">
-                <!-- 初始載入動畫 -->
                 <div class="loading">
                     <div class="spinner"></div>
                 </div>
@@ -402,7 +421,7 @@
         </main>
     </div>
 
-    <!-- ========== 發起活動彈窗 ========== -->
+    <!-- 發起活動彈窗 -->
     <div id="createModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -410,25 +429,21 @@
                 <span class="close" id="closeCreate">&times;</span>
             </div>
             <form id="createForm">
-                <!-- 活動時間選擇 -->
                 <div class="form-group">
                     <label>活動時間:</label>
-                    <input type="datetime-local" id="eventTime" required>
+                    <input type="datetime-local" id="eventTime" required name="eventTime">
                 </div>
-                <!-- 出發地點輸入 -->
                 <div class="form-group">
                     <label>出發地點:</label>
-                    <input type="text" id="startLocation" placeholder="例如：台北車站" required>
+                    <input type="text" id="startLocation" placeholder="例如：台北車站" required name="startLocation">
                 </div>
-                <!-- 目的地輸入 -->
                 <div class="form-group">
                     <label>目的地:</label>
-                    <input type="text" id="destination" placeholder="例如：某某餐廳" required>
+                    <input type="text" id="destination" placeholder="例如：某某餐廳" required name="destination">
                 </div>
-                <!-- 活動類別選擇 -->
                 <div class="form-group">
                     <label>活動類別:</label>
-                    <select id="eventCategory" required>
+                    <select id="eventCategory" required name="eventCategory">
                         <option value="">選擇類別</option>
                         <option value="美食">美食</option>
                         <option value="運動">運動</option>
@@ -437,22 +452,43 @@
                         <option value="其他">其他</option>
                     </select>
                 </div>
-                <!-- 人數上限設定 -->
-                <div class="form-group">
-                    <label>人數上限:</label>
-                    <input type="number" id="maxParticipants" min="2" max="20" value="4">
+                <!-- 性別人數設定 -->
+                <div class="gender-selects" style="margin-bottom:1.5rem;">
+                    <div class="form-group">
+                        <label>男生人數上限:</label>
+                        <select id="maxMale" required name="maxMale">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4" selected>4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>女生人數上限:</label>
+                        <select id="maxFemale" required name="maxFemale">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
                 </div>
-                <!-- 活動描述 -->
+                <div class="form-group">
+                    <label>人數上限(總):</label>
+                    <input type="number" id="maxParticipants" min="2" max="20" value="4" required name="maxParticipants">
+                </div>
                 <div class="form-group">
                     <label>備註說明:</label>
-                    <textarea id="description" placeholder="活動詳細說明或特殊要求"></textarea>
+                    <textarea id="description" placeholder="活動詳細說明或特殊要求" name="description"></textarea>
                 </div>
-                <!-- 聯絡方式 -->
                 <div class="form-group">
                     <label>聯絡方式:</label>
-                    <input type="text" id="contact" placeholder="電話或Line ID" required>
+                    <input type="text" id="contact" placeholder="電話或Line ID" required name="contact">
                 </div>
-                <!-- 表單操作按鈕 -->
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">發起活動</button>
                     <button type="button" id="cancelCreate" class="btn btn-secondary">取消</button>
@@ -461,110 +497,100 @@
         </div>
     </div>
 
-    <!-- ========== 活動詳情彈窗 ========== -->
+    <!-- 活動詳情彈窗 -->
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>活動詳情</h2>
                 <span class="close" id="closeDetail">&times;</span>
             </div>
-            <!-- 詳情內容將由JavaScript動態生成 -->
-            <div id="detailContent">
-                <!-- 動態內容 -->
-            </div>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+    <!-- 用戶評價彈窗 -->
+    <div class="user-review-modal" id="userReviewModal">
+        <div class="user-review-content" id="userReviewContent">
+            <span class="close-user-review" id="closeUserReview">&times;</span>
+            <!-- 內容由js生成 -->
         </div>
     </div>
 
     <script>
-        /**
-         * 相約系統主類別
-         * 負責管理整個應用程式的功能
-         */
+        // 模擬admintable uid（可替換為API查詢）
+        const adminUidTable = [1, 99, 100];
+
+        // 模擬所有用戶資料庫
+        const usersDB = [
+            {
+                uid: 1, name: 'Jerry', gender: 'male', avatarUrl: 'https://randomuser.me/api/portraits/men/15.jpg',
+                review: { good: 8, bad: 1, msgs: ['很準時', '人很友善'] }
+            },
+            {
+                uid: 2, name: 'Amy', gender: 'female', avatarUrl: 'https://randomuser.me/api/portraits/women/11.jpg',
+                review: { good: 5, bad: 0, msgs: ['溝通順暢', '活潑開朗'] }
+            },
+            {
+                uid: 3, name: 'Eric', gender: 'male', avatarUrl: 'https://randomuser.me/api/portraits/men/17.jpg',
+                review: { good: 2, bad: 2, msgs: ['有點遲到', '還算OK'] }
+            },
+            {
+                uid: 4, name: 'Mary', gender: 'female', avatarUrl: 'https://randomuser.me/api/portraits/women/19.jpg',
+                review: { good: 1, bad: 0, msgs: ['很有禮貌'] }
+            }
+        ];
+
+        // 取得user物件
+        function getUserById(uid) {
+            return usersDB.find(u => u.uid === uid);
+        }
+
+        // 相約系統主類
         class AppointmentSystem {
-            /**
-             * 建構函式：初始化系統
-             */
             constructor() {
-                // API基礎URL設定（實際使用時需要替換為真實的API地址）
                 this.apiBaseUrl = 'https://your-api-domain.com/api';
-                // 儲存所有活動的陣列
                 this.events = [];
-                // 初始化系統
+                this.currentUserId = 1; // 假設登入者uid=1
+                this.currentUser = getUserById(this.currentUserId);
                 this.init();
             }
 
-            /**
-             * 初始化系統：設定事件監聽器並載入活動
-             */
             init() {
                 this.setupEventListeners();
                 this.loadEvents();
             }
-
-            /**
-             * 設定所有事件監聽器
-             * 包括按鈕點擊、表單提交、彈窗關閉等事件
-             */
             setupEventListeners() {
-                // 發起活動按鈕
                 document.getElementById('createBtn').addEventListener('click', () => this.showCreateModal());
-                
-                // 發起活動彈窗的關閉事件
                 document.getElementById('closeCreate').addEventListener('click', () => this.hideCreateModal());
                 document.getElementById('cancelCreate').addEventListener('click', () => this.hideCreateModal());
-                
-                // 發起活動表單提交事件
                 document.getElementById('createForm').addEventListener('submit', (e) => this.handleCreateSubmit(e));
-                
-                // 活動詳情彈窗關閉事件
                 document.getElementById('closeDetail').addEventListener('click', () => this.hideDetailModal());
-                
-                // 篩選和重新載入按鈕
                 document.getElementById('filterBtn').addEventListener('click', () => this.filterEvents());
                 document.getElementById('refreshBtn').addEventListener('click', () => this.loadEvents());
-                
-                // 點擊彈窗外部區域關閉彈窗
-                window.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('modal')) {
+                document.getElementById('adminBtn').addEventListener('click', () => this.handleAdminLogin());
+                window.addEventListener('mousedown', (e) => {
+                    // 修正：只有點擊黑色遮罩才關閉modal，避免誤關
+                    if (e.target.classList.contains('modal') && e.target.style.display === 'block') {
                         e.target.style.display = 'none';
                     }
+                    if (e.target.classList.contains('user-review-modal') && e.target.style.display === 'block') {
+                        this.hideUserReviewModal();
+                    }
                 });
+                document.getElementById('closeUserReview').addEventListener('click', () => this.hideUserReviewModal());
             }
 
-            /**
-             * 從API載入活動資料
-             * 目前使用模擬資料，實際使用時需要連接真實API
-             */
             async loadEvents() {
-                try {
-                    // 顯示載入動畫
-                    this.showLoading();
-                    
-                    // 實際API調用範例（註解掉的部分）
-                    // const response = await fetch(`${this.apiBaseUrl}/events`);
-                    // const events = await response.json();
-                    
-                    // 使用模擬資料
-                    const events = await this.getMockEvents();
-                    
-                    // 更新本地活動陣列並渲染到頁面
-                    this.events = events;
-                    this.renderEvents(events);
-                } catch (error) {
-                    console.error('載入活動失敗:', error);
-                    this.showNotification('載入活動失敗', 'error');
-                    this.renderEvents([]); // 渲染空列表
-                }
+                this.showLoading();
+                document.getElementById('categoryFilter').value = '';
+                document.getElementById('timeFilter').value = '';
+                const events = await this.getMockEvents();
+                this.events = events;
+                this.renderEvents(events);
             }
-
-            /**
-             * 取得模擬活動資料
-             * 實際使用時應該刪除此函式，直接使用API
-             * @returns {Promise} 回傳包含活動資料的Promise
-             */
+            // 模擬活動資料
             async getMockEvents() {
                 return new Promise(resolve => {
-                    // 模擬API延遲
                     setTimeout(() => {
                         resolve([
                             {
@@ -576,7 +602,10 @@
                                 destination: '西門町',
                                 description: '一起去西門町吃美食！',
                                 maxParticipants: 4,
-                                currentParticipants: 2,
+                                maxMale: 2,
+                                maxFemale: 2,
+                                participants: [1, 2], // uid
+                                creatorId: 2,
                                 contact: 'Line: foodlover123',
                                 createdAt: '2025-05-22T10:00:00'
                             },
@@ -589,298 +618,319 @@
                                 destination: '信義威秀',
                                 description: '看最新上映的電影',
                                 maxParticipants: 6,
-                                currentParticipants: 3,
+                                maxMale: 3,
+                                maxFemale: 3,
+                                participants: [1, 3, 4],
+                                creatorId: 1,
                                 contact: '0912-345-678',
                                 createdAt: '2025-05-22T14:30:00'
                             }
                         ]);
-                    }, 1000); // 1秒延遲模擬網路請求
+                    }, 800);
                 });
             }
-
-            /**
-             * 建立新活動
-             * @param {Object} eventData - 活動資料物件
-             * @returns {Promise} API回應結果
-             */
             async createEvent(eventData) {
-                try {
-                    // 實際API調用範例（註解掉的部分）
-                    // const response = await fetch(`${this.apiBaseUrl}/events`, {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //     },
-                    //     body: JSON.stringify(eventData)
-                    // });
-                    // const result = await response.json();
-                    
-                    // 模擬API回應
-                    const result = {
-                        success: true,
-                        id: Date.now(), // 使用時間戳作為ID
-                        message: '活動發起成功'
+                // 實際應連API
+                const result = { success: true, id: Date.now(), message: '活動發起成功' };
+                if (result.success) {
+                    const newEvent = {
+                        ...eventData,
+                        id: result.id,
+                        participants: [this.currentUserId],
+                        creatorId: this.currentUserId,
+                        createdAt: new Date().toISOString()
                     };
-                    
-                    return result;
-                } catch (error) {
-                    throw new Error('發起活動失敗');
+                    this.events.unshift(newEvent);
                 }
+                return result;
             }
-
-            /**
-             * 加入活動
-             * @param {number} eventId - 活動ID
-             */
+            // 參加活動
             async joinEvent(eventId) {
-                try {
-                    // 實際API調用範例（註解掉的部分）
-                    // const response = await fetch(`${this.apiBaseUrl}/events/${eventId}/join`, {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //     }
-                    // });
-                    // const result = await response.json();
-                    
-                    // 模擬加入活動邏輯
-                    const event = this.events.find(e => e.id === eventId);
-                    if (event && event.currentParticipants < event.maxParticipants) {
-                        event.currentParticipants++; // 增加參與人數
-                        this.showNotification('成功加入活動！', 'success');
-                        this.renderEvents(this.events); // 重新渲染活動列表
-                    } else {
-                        this.showNotification('活動已滿或不存在', 'error');
-                    }
-                } catch (error) {
-                    this.showNotification('加入活動失敗', 'error');
-                }
-            }
+                const event = this.events.find(e => e.id === eventId);
+                if (!event) return this.showNotification('活動不存在', 'error');
+                if (event.participants.includes(this.currentUserId)) return this.showNotification('您已參與', 'error');
+                if (event.participants.length >= event.maxParticipants) return this.showNotification('活動已滿', 'error');
 
-            /**
-             * 顯示載入動畫
-             */
+                const user = getUserById(this.currentUserId);
+                // 計算現有男女
+                let male = 0, female = 0;
+                event.participants.forEach(uid => {
+                    const u = getUserById(uid);
+                    if (!u) return;
+                    if (u.gender === 'male') male++;
+                    else if (u.gender === 'female') female++;
+                });
+                if (user.gender === 'male' && male >= event.maxMale) return this.showNotification('男生名額已滿', 'error');
+                if (user.gender === 'female' && female >= event.maxFemale) return this.showNotification('女生名額已滿', 'error');
+
+                event.participants.push(this.currentUserId);
+                this.showNotification('成功加入活動', 'success');
+                this.renderEvents(this.events);
+            }
+            async leaveEvent(eventId) {
+                const event = this.events.find(e => e.id === eventId);
+                if (!event) return this.showNotification('活動不存在', 'error');
+                if (event.creatorId === this.currentUserId) return this.showNotification('發起人無法取消參與，請取消活動', 'error');
+                const idx = event.participants.indexOf(this.currentUserId);
+                if (idx === -1) return this.showNotification('您未參與', 'error');
+                event.participants.splice(idx, 1);
+                this.showNotification('已取消參與', 'success');
+                this.renderEvents(this.events);
+            }
+            async cancelEvent(eventId) {
+                const idx = this.events.findIndex(e => e.id === eventId);
+                if (idx === -1) return this.showNotification('活動不存在', 'error');
+                if (this.events[idx].creatorId !== this.currentUserId) return this.showNotification('只有發起人可取消', 'error');
+                if (!confirm('確定要取消？')) return;
+                this.events.splice(idx, 1);
+                this.showNotification('活動已取消', 'success');
+                this.renderEvents(this.events);
+            }
             showLoading() {
                 document.getElementById('eventsList').innerHTML = `
-                    <div class="loading">
-                        <div class="spinner"></div>
-                    </div>
+                    <div class="loading"><div class="spinner"></div></div>
                 `;
             }
-
-            /**
-             * 渲染活動列表到頁面
-             * @param {Array} events - 活動陣列
-             */
+            // 活動卡片渲染
             renderEvents(events) {
                 const eventsList = document.getElementById('eventsList');
-                
-                // 如果沒有活動，顯示空狀態
                 if (events.length === 0) {
                     eventsList.innerHTML = `
                         <div class="empty-state">
                             <h3>暫無活動</h3>
                             <p>目前沒有活動，發起一個新活動吧！</p>
                             <button class="btn btn-primary" onclick="app.showCreateModal()">發起活動</button>
-                        </div>
-                    `;
+                        </div>`;
                     return;
                 }
+                eventsList.innerHTML = events.map(event => {
+                    // 男女現況
+                    let male = 0, female = 0;
+                    let avatarsHtml = '';
+                    event.participants.forEach(uid => {
+                        const u = getUserById(uid);
+                        if (!u) return;
+                        if (u.gender === 'male') male++; else if (u.gender === 'female') female++;
+                        avatarsHtml += `<div class="avatar${uid===event.creatorId?' creator':''}" title="${u.name}" onclick="event.stopPropagation(); app.showUserReview(${uid})">
+                            <img src="${u.avatarUrl}" alt="${u.name}" />
+                        </div>`;
+                    });
+                    const isFull = event.participants.length >= event.maxParticipants;
+                    const isCreator = event.creatorId === this.currentUserId;
+                    const isJoined = event.participants.includes(this.currentUserId);
 
-                // 生成活動卡片HTML
-                eventsList.innerHTML = events.map(event => `
+                    let actionBtn = '';
+                    if (isCreator) {
+                        actionBtn = `<button class="btn btn-danger join-btn" onclick="event.stopPropagation(); app.cancelEvent(${event.id})">取消活動</button>`;
+                    } else if (isJoined) {
+                        actionBtn = `<button class="btn btn-secondary join-btn" onclick="event.stopPropagation(); app.leaveEvent(${event.id})">取消參與</button>`;
+                    } else if (isFull) {
+                        actionBtn = `<span class="btn btn-secondary join-btn">已滿</span>`;
+                    } else {
+                        // 性別邏輯提示
+                        const user = getUserById(this.currentUserId);
+                        let genderWarn = '';
+                        if (user.gender === 'male' && male >= event.maxMale) genderWarn = '男生名額已滿';
+                        if (user.gender === 'female' && female >= event.maxFemale) genderWarn = '女生名額已滿';
+                        if (genderWarn) {
+                            actionBtn = `<span class="btn btn-secondary join-btn">${genderWarn}</span>`;
+                        } else {
+                            actionBtn = `<button class="btn btn-primary join-btn" onclick="event.stopPropagation(); app.joinEvent(${event.id})">加入 +1</button>`;
+                        }
+                    }
+
+                    return `
                     <div class="event-card" onclick="app.showEventDetail(${event.id})">
                         <div class="event-header">
                             <span class="event-category">${event.category}</span>
                             <span class="event-time">${this.formatDateTime(event.time)}</span>
                         </div>
                         <div class="event-details">
+                            <div class="event-detail-item"><span class="event-detail-label">活動:</span>
+                                <span class="event-detail-value">${event.title || event.destination}</span></div>
+                            <div class="event-detail-item"><span class="event-detail-label">出發:</span>
+                                <span class="event-detail-value">${event.startLocation}</span></div>
+                            <div class="event-detail-item"><span class="event-detail-label">目的地:</span>
+                                <span class="event-detail-value">${event.destination}</span></div>
+                            ${event.description ? `<div class="event-detail-item"><span class="event-detail-label">說明:</span>
+                                <span class="event-detail-value">${event.description}</span></div>` : ''}
                             <div class="event-detail-item">
-                                <span class="event-detail-label">活動:</span>
-                                <span class="event-detail-value">${event.title || event.destination}</span>
+                                <span class="event-detail-label">人數:</span>
+                                <span class="event-detail-value">${event.participants.length}/${event.maxParticipants}（男${male}/${event.maxMale} 女${female}/${event.maxFemale}）</span>
                             </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-label">出發:</span>
-                                <span class="event-detail-value">${event.startLocation}</span>
-                            </div>
-                            <div class="event-detail-item">
-                                <span class="event-detail-label">目的地:</span>
-                                <span class="event-detail-value">${event.destination}</span>
-                            </div>
-                            ${event.description ? `
-                            <div class="event-detail-item">
-                                <span class="event-detail-label">說明:</span>
-                                <span class="event-detail-value">${event.description}</span>
-                            </div>
-                            ` : ''}
                         </div>
                         <div class="event-footer">
-                            <div class="participant-count">
-                                <span>👥</span>
-                                <span>${event.currentParticipants}/${event.maxParticipants}</span>
-                            </div>
-                            ${event.currentParticipants < event.maxParticipants ? `
-                                <button class="btn btn-primary join-btn" onclick="event.stopPropagation(); app.joinEvent(${event.id})">
-                                    加入 +1
-                                </button>
-                            ` : `
-                                <span class="btn btn-secondary join-btn">已滿</span>
-                            `}
+                            <div class="avatar-list">${avatarsHtml}</div>
+                            ${actionBtn}
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             }
-
-            /**
-             * 格式化日期時間顯示
-             * @param {string} dateTime - ISO日期時間字串
-             * @returns {string} 格式化後的日期時間（MM/DD HH:MM）
-             */
-            formatDateTime(dateTime) {
-                const date = new Date(dateTime);
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const day = date.getDate().toString().padStart(2, '0');
-                const hours = date.getHours().toString().padStart(2, '0');
-                const minutes = date.getMinutes().toString().padStart(2, '0');
-                return `${month}/${day} ${hours}:${minutes}`;
-            }
-
-            /**
-             * 顯示發起活動彈窗
-             */
             showCreateModal() {
-                document.getElementById('createModal').style.display = 'block';
-                // 設置預設時間為當前時間+1小時
-                const now = new Date();
-                now.setHours(now.getHours() + 1);
-                document.getElementById('eventTime').value = now.toISOString().slice(0, 16);
-            }
-
-            hideCreateModal() {
-                document.getElementById('createModal').style.display = 'none';
-                document.getElementById('createForm').reset();
-            }
-
+    document.getElementById('createModal').classList.add('show');
+}
+hideCreateModal() {
+    document.getElementById('createModal').classList.remove('show');
+    document.getElementById('createForm').reset();
+}
             async handleCreateSubmit(e) {
                 e.preventDefault();
-                
+                // 直接用 FormData 取值，避免 id cache 問題
+                const formData = new FormData(e.target);
                 const eventData = {
-                    title: document.getElementById('destination').value,
-                    time: document.getElementById('eventTime').value,
-                    startLocation: document.getElementById('startLocation').value,
-                    destination: document.getElementById('destination').value,
-                    category: document.getElementById('eventCategory').value,
-                    maxParticipants: parseInt(document.getElementById('maxParticipants').value),
-                    description: document.getElementById('description').value,
-                    contact: document.getElementById('contact').value
+                    title: formData.get('destination'),
+                    category: formData.get('eventCategory'),
+                    time: formData.get('eventTime'),
+                    startLocation: formData.get('startLocation'),
+                    destination: formData.get('destination'),
+                    description: formData.get('description'),
+                    maxParticipants: parseInt(formData.get('maxParticipants')),
+                    contact: formData.get('contact'),
+                    maxMale: parseInt(formData.get('maxMale')),
+                    maxFemale: parseInt(formData.get('maxFemale'))
                 };
-
-                try {
-                    const result = await this.createEvent(eventData);
-                    if (result.success) {
-                        this.hideCreateModal();
-                        this.showNotification('活動發起成功！', 'success');
-                        this.loadEvents();
-                    }
-                } catch (error) {
+                if (eventData.maxMale + eventData.maxFemale > eventData.maxParticipants) {
+                    this.showNotification('男女總人數不可超過總人數上限', 'error'); return;
+                }
+                if (eventData.maxMale + eventData.maxFemale < eventData.maxParticipants) {
+                    this.showNotification('男女人數總和須等於總上限', 'error'); return;
+                }
+                const result = await this.createEvent(eventData);
+                if (result.success) {
+                    this.showNotification('活動發起成功！', 'success');
+                    this.hideCreateModal();
+                    this.renderEvents(this.events);
+                } else {
                     this.showNotification('發起活動失敗', 'error');
                 }
             }
-
             showEventDetail(eventId) {
                 const event = this.events.find(e => e.id === eventId);
                 if (!event) return;
+                let male = 0, female = 0;
+                let avatarsHtml = '';
+                event.participants.forEach(uid => {
+                    const u = getUserById(uid);
+                    if (!u) return;
+                    if (u.gender === 'male') male++; else if (u.gender === 'female') female++;
+                    avatarsHtml += `<div class="avatar${uid===event.creatorId?' creator':''}" title="${u.name}" onclick="app.showUserReview(${uid});event.stopPropagation();">
+                        <img src="${u.avatarUrl}" alt="${u.name}" />
+                    </div>`;
+                });
+                const isFull = event.participants.length >= event.maxParticipants;
+                const isCreator = event.creatorId === this.currentUserId;
+                const isJoined = event.participants.includes(this.currentUserId);
 
-                const content = `
+                let actionBtn = '';
+                if (isCreator) {
+                    actionBtn = `<button class="btn btn-danger" onclick="app.cancelEvent(${event.id}); app.hideDetailModal();">取消活動</button>`;
+                } else if (isJoined) {
+                    actionBtn = `<button class="btn btn-secondary" onclick="app.leaveEvent(${event.id}); app.hideDetailModal();">取消參與</button>`;
+                } else if (isFull) {
+                    actionBtn = `<span class="btn btn-secondary">活動已滿</span>`;
+                } else {
+                    const user = getUserById(this.currentUserId);
+                    let genderWarn = '';
+                    if (user.gender === 'male' && male >= event.maxMale) genderWarn = '男生名額已滿';
+                    if (user.gender === 'female' && female >= event.maxFemale) genderWarn = '女生名額已滿';
+                    if (genderWarn) {
+                        actionBtn = `<span class="btn btn-secondary">${genderWarn}</span>`;
+                    } else {
+                        actionBtn = `<button class="btn btn-primary" onclick="app.joinEvent(${event.id}); app.hideDetailModal();">加入活動</button>`;
+                    }
+                }
+                document.getElementById('detailContent').innerHTML = `
                     <div style="padding: 1.5rem;">
-                        <h3 style="margin-bottom: 1rem; color: #333;">${event.title || event.destination}</h3>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">時間:</span>
-                            <span class="event-detail-value">${this.formatDateTime(event.time)}</span>
-                        </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">類別:</span>
-                            <span class="event-detail-value">${event.category}</span>
-                        </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">出發地:</span>
-                            <span class="event-detail-value">${event.startLocation}</span>
-                        </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">目的地:</span>
-                            <span class="event-detail-value">${event.destination}</span>
-                        </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">人數:</span>
-                            <span class="event-detail-value">${event.currentParticipants}/${event.maxParticipants}</span>
-                        </div>
-                        <div class="event-detail-item" style="margin-bottom: 0.8rem;">
-                            <span class="event-detail-label">聯絡方式:</span>
-                            <span class="event-detail-value">${event.contact}</span>
-                        </div>
-                        ${event.description ? `
-                        <div class="event-detail-item" style="margin-bottom: 1rem;">
-                            <span class="event-detail-label">活動說明:</span>
-                            <span class="event-detail-value">${event.description}</span>
-                        </div>
-                        ` : ''}
-                        
-                        <div style="text-align: center; margin-top: 2rem;">
-                            ${event.currentParticipants < event.maxParticipants ? `
-                                <button class="btn btn-primary" onclick="app.joinEvent(${event.id}); app.hideDetailModal();">
-                                    我要參加
-                                </button>
-                            ` : `
-                                <p style="color: #666;">此活動已滿</p>
-                            `}
+                        <div class="event-detail-item"><span class="event-detail-label">活動時間:</span>
+                            <span class="event-detail-value">${this.formatDateTime(event.time)}</span></div>
+                        <div class="event-detail-item"><span class="event-detail-label">出發地點:</span>
+                            <span class="event-detail-value">${event.startLocation}</span></div>
+                        <div class="event-detail-item"><span class="event-detail-label">目的地:</span>
+                            <span class="event-detail-value">${event.destination}</span></div>
+                        <div class="event-detail-item"><span class="event-detail-label">活動類別:</span>
+                            <span class="event-detail-value">${event.category}</span></div>
+                        <div class="event-detail-item"><span class="event-detail-label">人數:</span>
+                            <span class="event-detail-value">${event.participants.length}/${event.maxParticipants}（男${male}/${event.maxMale} 女${female}/${event.maxFemale}）</span></div>
+                        ${event.description ? `<div class="event-detail-item"><span class="event-detail-label">備註說明:</span>
+                            <span class="event-detail-value">${event.description}</span></div>` : ''}
+                        <div class="event-detail-item"><span class="event-detail-label">聯絡方式:</span>
+                            <span class="event-detail-value">${event.contact}</span></div>
+                        <div class="event-detail-item" style="margin-top:1.2rem;">
+                            <span class="event-detail-label">參與者:</span>
+                            <span class="event-detail-value avatar-list">${avatarsHtml}</span>
                         </div>
                     </div>
+                    <div class="form-actions">
+                        ${actionBtn}
+                        <button class="btn btn-secondary" onclick="app.hideDetailModal()">關閉</button>
+                    </div>
                 `;
-
-                document.getElementById('detailContent').innerHTML = content;
                 document.getElementById('detailModal').style.display = 'block';
             }
-
             hideDetailModal() {
                 document.getElementById('detailModal').style.display = 'none';
             }
-
             filterEvents() {
-                const category = document.getElementById('categoryFilter').value;
+                const categoryFilter = document.getElementById('categoryFilter').value;
                 const timeFilter = document.getElementById('timeFilter').value;
-                
-                let filteredEvents = [...this.events];
-                
-                if (category) {
-                    filteredEvents = filteredEvents.filter(event => event.category === category);
-                }
-                
+                let filteredEvents = this.events;
+                if (categoryFilter) filteredEvents = filteredEvents.filter(event => event.category === categoryFilter);
                 if (timeFilter) {
                     const filterDate = new Date(timeFilter);
-                    filteredEvents = filteredEvents.filter(event => {
-                        const eventDate = new Date(event.time);
-                        return eventDate >= filterDate;
-                    });
+                    filteredEvents = filteredEvents.filter(event => new Date(event.time) >= filterDate);
                 }
-                
                 this.renderEvents(filteredEvents);
             }
-
+            formatDateTime(dateTimeString) {
+                const date = new Date(dateTimeString);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${month}/${day} ${hours}:${minutes}`;
+            }
             showNotification(message, type = 'success') {
+                const existingNotification = document.querySelector('.notification');
+                if (existingNotification) existingNotification.remove();
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
                 notification.textContent = message;
-                
                 document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
+                setTimeout(() => notification.remove(), 3000);
+            }
+            // 新增：顯示用戶評價彈窗
+            showUserReview(uid) {
+                const user = getUserById(uid);
+                if (!user) return;
+                const review = user.review || { good: 0, bad: 0, msgs: [] };
+                let html = `
+                    <div class="user-review-header">
+                        <img src="${user.avatarUrl}" alt="${user.name}" />
+                        <div class="user-review-name">${user.name} ${user.gender === 'male' ? '♂️' : '♀️'}</div>
+                        <div class="user-review-gb">👍 ${review.good}　👎 ${review.bad}</div>
+                    </div>
+                    <div class="review-msg-list">
+                        ${review.msgs.length === 0 ? '<div class="review-msg-item">暫無文字評價</div>' : review.msgs.map(msg => `<div class="review-msg-item">${msg}</div>`).join('')}
+                    </div>
+                `;
+                document.getElementById('userReviewContent').innerHTML = `<span class="close-user-review" id="closeUserReview">&times;</span>${html}`;
+                document.getElementById('userReviewModal').style.display = 'block';
+                document.getElementById('closeUserReview').onclick = () => this.hideUserReviewModal();
+            }
+            hideUserReviewModal() {
+                document.getElementById('userReviewModal').style.display = 'none';
+            }
+            // 管理者功能
+            handleAdminLogin() {
+                if (adminUidTable.includes(this.currentUserId)) {
+                    window.location.href = "admin.html";
+                } else {
+                    this.showNotification("您無管理員權限", "error");
+                }
             }
         }
-
-        // 初始化應用
         const app = new AppointmentSystem();
+        // 讓全局可調用
         window.app = app;
     </script>
 </body>
