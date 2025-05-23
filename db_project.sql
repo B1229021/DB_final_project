@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2025-05-21 16:40:09
+-- 產生時間： 2025-05-23 10:06:27
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -20,26 +20,6 @@ SET time_zone = "+00:00";
 --
 -- 資料庫： `db_project`
 --
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `admin`
---
-
-CREATE TABLE `admin` (
-  `uid` varchar(50) NOT NULL,
-  `account` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- 傾印資料表的資料 `admin`
---
-
-INSERT INTO `admin` (`uid`, `account`, `password`) VALUES
-('gGd8go3Axfg89FDrhnGSRFeHrbg4b', 'banban', '123456789'),
-('rkne8sw7dhsHfFBdfkD89frgsdUJfdD', 'pizza@gmail.com', '123456789');
 
 -- --------------------------------------------------------
 
@@ -65,7 +45,8 @@ INSERT INTO `categories` (`categories_id`, `content`) VALUES
 (6, '專業 / 商務'),
 (7, '市集 / 展覽'),
 (8, '志工 / 公益'),
-(9, '親子 / 家庭');
+(9, '親子 / 家庭'),
+(10, '體育 / 活動');
 
 -- --------------------------------------------------------
 
@@ -84,6 +65,7 @@ CREATE TABLE `event` (
 --
 
 INSERT INTO `event` (`categories_id`, `event_id`, `content`) VALUES
+(10, 0, '打籃球'),
 (1, 1, '音樂會 / 演唱會'),
 (1, 2, '舞台劇 / 戲劇'),
 (1, 3, '喜劇 / 脫口秀'),
@@ -136,17 +118,21 @@ INSERT INTO `event` (`categories_id`, `event_id`, `content`) VALUES
 
 CREATE TABLE `involvement` (
   `orderid` int(11) NOT NULL,
-  `uid` varchar(50) NOT NULL
+  `uid` varchar(50) NOT NULL,
+  `eval_to_booker` varchar(200) DEFAULT NULL,
+  `booker_eval` varchar(200) DEFAULT NULL,
+  `evaluation` int(1) DEFAULT NULL COMMENT '讚:1，倒讚:-1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- 傾印資料表的資料 `involvement`
 --
 
-INSERT INTO `involvement` (`orderid`, `uid`) VALUES
-(1, 'gjhdri4h509ah1h73h2hsdlo3'),
-(1, 'gsd8fgl3vx0dh3g3h36h6h0az1he0f1h'),
-(2, 'jre82jd02ls6gwsnx5reww5oosh');
+INSERT INTO `involvement` (`orderid`, `uid`, `eval_to_booker`, `booker_eval`, `evaluation`) VALUES
+(1, 'gjhdri4h509ah1h73h2hsdlo3', NULL, NULL, 1),
+(1, 'gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', NULL, NULL, 1),
+(2, 'jre82jd02ls6gwsnx5reww5oosh', '講話很大聲，沒頭沒腦', '不尊重人', -1),
+(2, 'rehg8923njasd9srftgnjrs43hgsdjnrs6uj', '很聒噪的人', '很安靜的人', 1);
 
 -- --------------------------------------------------------
 
@@ -158,21 +144,27 @@ CREATE TABLE `order_detail` (
   `orderid` int(11) NOT NULL,
   `booker` varchar(50) NOT NULL,
   `location` varchar(100) NOT NULL,
-  `gender_limit` varchar(1) DEFAULT NULL,
   `deadtime` datetime NOT NULL,
+  `start_time` datetime NOT NULL DEFAULT current_timestamp(),
   `annotation` varchar(200) DEFAULT NULL,
   `participants` int(2) NOT NULL DEFAULT 1,
   `state` varchar(4) NOT NULL,
-  `event_id` int(4) DEFAULT NULL
+  `event_id` int(4) DEFAULT NULL,
+  `gender_limit` tinyint(1) NOT NULL DEFAULT 0,
+  `male_limit` int(2) DEFAULT NULL,
+  `female_limit` int(2) DEFAULT NULL,
+  `male_num` int(2) NOT NULL DEFAULT 0,
+  `female_num` int(2) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- 傾印資料表的資料 `order_detail`
 --
 
-INSERT INTO `order_detail` (`orderid`, `booker`, `location`, `gender_limit`, `deadtime`, `annotation`, `participants`, `state`, `event_id`) VALUES
-(1, 'g8hl30shd2gg78nfdol3iixye6sio62xuue', '台北市信義區市府路5段', NULL, '2025-06-06 10:00:00', '放假第一天，出去玩，上午十點集合', 2, '已預約', 31),
-(2, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '台北市中山區南京西路12號', '女', '2025-05-11 14:28:41', '母親節打折，去逛街，下午一點集合!!!', 4, '已結束', 1);
+INSERT INTO `order_detail` (`orderid`, `booker`, `location`, `deadtime`, `start_time`, `annotation`, `participants`, `state`, `event_id`, `gender_limit`, `male_limit`, `female_limit`, `male_num`, `female_num`) VALUES
+(1, 'g8hl30shd2gg78nfdol3iixye6sio62xuue', '台北市信義區市府路5段', '2025-06-06 10:00:00', '2025-05-23 14:29:30', '放假第一天，出去玩，上午十點集合', 3, '已滿人', 31, 0, NULL, NULL, 3, 0),
+(2, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '台北市中山區南京西路12號', '2025-05-11 14:28:41', '2025-05-23 14:29:30', '母親節打折，去逛街，下午一點集合!!!', 4, '已結束', 1, 1, 0, 4, 0, 3),
+(3, 'wergea78gewahr592kzx0xfhw3fddbad', '桃園市龜山區文化一路259號', '2025-06-03 13:00:00', '2025-06-03 14:00:00', '哪個大神來救我的資料庫啊', 5, '已成立', 7, 0, NULL, NULL, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -182,34 +174,35 @@ INSERT INTO `order_detail` (`orderid`, `booker`, `location`, `gender_limit`, `de
 
 CREATE TABLE `user` (
   `uid` varchar(50) NOT NULL,
-  `account` varchar(100) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `username` varchar(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `gender` varchar(1) NOT NULL,
-  `good` int(4) NOT NULL,
-  `bad` int(4) NOT NULL DEFAULT 0
+  `birthday` date DEFAULT NULL,
+  `self_introduction` varchar(200) DEFAULT NULL,
+  `isadmin` tinyint(1) DEFAULT 0,
+  `phone` varchar(10) NOT NULL,
+  `identify_ID` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- 傾印資料表的資料 `user`
 --
 
-INSERT INTO `user` (`uid`, `account`, `password`, `name`, `gender`, `good`, `bad`) VALUES
-('f8dh3ld8bnwe3bfx8hre3jt7b01gvd', 'thisishowtobeaheartbreaker@gmail.com', 'heartbreaker', '陳欣妤', '女', 0, 0),
-('g8hl30shd2gg78nfdol3iixye6sio62xuue', 'fentorisu@yahoo.com.tw', '123456789', '林俊傑', '男', 0, 0),
-('gjhdri4h509ah1h73h2hsdlo3', 'B1229099@cgu.edu.tw', 'B229099', '林威宇', '男', 0, 0),
-('gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', 'banana001@gmail.com', '987654321', '黃逗號', '男', 0, 0),
-('jre82jd02ls6gwsnx5reww5oosh', 'pizzahahahahaha@gmail.com', '123456789', '王曉明', '女', 0, 0);
+INSERT INTO `user` (`uid`, `username`, `name`, `gender`, `birthday`, `self_introduction`, `isadmin`, `phone`, `identify_ID`) VALUES
+('ergse9gwq42lsd7gjl478wshnjsjklfd', '尊', '朱玉恩', '男', '1998-08-08', '哈樓大家好我是尊', 0, '0956789012', 'G123456789'),
+('f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '星予', '陳欣妤', '女', '2025-05-23', '予是三聲，妤是二聲', 0, '0912345678', 'B123456789'),
+('g8hl30shd2gg78nfdol3iixye6sio62xuue', '俊傑哥', '林俊傑', '男', '2025-05-23', '我是歌手', 0, '0987654321', 'C123456789'),
+('gjhdri4h509ah1h73h2hsdlo3', '資工二系學會長', '林威宇', '男', '2025-05-23', '歡迎妹子來找我', 0, '0923456789', 'D123456789'),
+('gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', '我喜歡句號', '黃逗號', '男', '2025-05-23', NULL, 0, '0934567890', 'E123456789'),
+('jre82jd02ls6gwsnx5reww5oosh', '王小明', '王曉明', '女', '2025-05-23', '我真的是曉', 0, '045678901', 'F123456789'),
+('rehg8923njasd9srftgnjrs43hgsdjnrs6uj', '檸檬', '楊思涵', '女', '2005-04-04', NULL, 0, '0967890123', 'H123456789'),
+('rfaedg8912bnwg83b2', '黃星昊', '黃星昊', '男', '2005-01-01', '可惜我不是句號', 1, '0902030405', 'A987654320'),
+('th902jms0dg2j347tt4njksdfgbb', '句號', '林靖', '女', '2006-07-07', '你好~', 0, '0978901234', 'I123456789'),
+('wergea78gewahr592kzx0xfhw3fddbad', '星辰', '陳泓均', '男', '2004-10-10', NULL, 1, '0901020304', 'A987654321');
 
 --
 -- 已傾印資料表的索引
 --
-
---
--- 資料表索引 `admin`
---
-ALTER TABLE `admin`
-  ADD PRIMARY KEY (`uid`);
 
 --
 -- 資料表索引 `categories`
@@ -253,13 +246,13 @@ ALTER TABLE `user`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `categories_id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `categories_id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `order_detail`
 --
 ALTER TABLE `order_detail`
-  MODIFY `orderid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `orderid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- 已傾印資料表的限制式
