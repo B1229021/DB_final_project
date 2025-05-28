@@ -1,0 +1,32 @@
+    body {
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 450px;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      border: none;
+      border-radius: 50px;
+      font-weight: bold;
+      padding: 0.75rem;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    input::placeholder {
+      color: #bbb;
+    }

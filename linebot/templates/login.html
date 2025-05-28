@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>登入中...</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <p>登入中，請稍候...</p>
+
+  <script>
+    const LIFF_ID = "你自己的 LIFF ID";
+
+    async function main() {
+      await liff.init({ liffId: LIFF_ID });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      const uid = profile.userId;
+
+      // 導向 grade.html 並帶上 userId
+      window.location.href = `/grade?uid=${uid}`;
+    }
+
+    main();
+  </script>
+</body>
+</html>
