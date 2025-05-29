@@ -4,7 +4,7 @@ require_once 'db_connect.php'; // 假設這個檔案裡有 $conn 的資料庫連
 $uid = $_SESSION['uid'] ?? "f8dh3ld8bnwe3bfx8hre3jt7b01gvd";
 
 if (!$uid) {
-    header('Location: login.php');
+    header('Location: index.php');
     exit;
 }
 ?>
@@ -33,7 +33,7 @@ $created_events = $stmt->get_result();
 
 <?php
 $joined_sql = "
-SELECT od.*, e.content AS event_name, u.name AS booker_name, i.eval_to_booker, i.booker_eval, i.evaluation 
+SELECT od.*, e.content AS event_name, u.username AS booker_username, i.eval_to_booker, i.booker_eval, i.evaluation 
 FROM involvement i
 JOIN order_detail od ON i.orderid = od.orderid
 JOIN event e ON od.event_id = e.event_id
@@ -76,6 +76,34 @@ $eval_result = $stmt->get_result();
 $eval_data = $eval_result->fetch_assoc();
 ?>
 
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // 更新用戶資料
+    $new_username = $_POST['username'] ?? '';
+    $new_name = $_POST['name'] ?? '';
+    $new_gender = $_POST['gender'] ?? '';
+    $new_birthday = $_POST['birthday'] ?? null;
+    $new_phone = $_POST['phone'] ?? '';
+    $new_intro = $_POST['self_introduction'] ?? '';
+
+    $update_sql = "
+        UPDATE user SET 
+            username = ?, 
+            name = ?, 
+            gender = ?, 
+            birthday = ?, 
+            phone = ?, 
+            self_introduction = ? 
+        WHERE uid = ?";
+    $stmt = $conn->prepare($update_sql);
+    $stmt->bind_param("sssssss", $new_username, $new_name, $new_gender, $new_birthday, $new_phone, $new_intro, $uid);
+    $stmt->execute();
+
+    // 重新載入最新資料
+    header("Location: profile.php?edit=success");
+    exit;
+}
+?>
 
 
 
@@ -94,12 +122,58 @@ $eval_data = $eval_result->fetch_assoc();
 
         <div class="profile-info">
             <h1>使用者個人資料</h1>
-            <p><strong>暱稱：</strong> <?php echo htmlspecialchars($user['username']); ?></p>
-            <p><strong>真實姓名：</strong> <?php echo htmlspecialchars($user['name']); ?></p>
-            <p><strong>性別：</strong> <?php echo htmlspecialchars($user['gender']); ?></p>
-            <p><strong>生日：</strong> <?php echo htmlspecialchars($user['birthday']); ?></p>
-            <p><strong>電話：</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
-            <p><strong>自我介紹：</strong> <?php echo htmlspecialchars($user['self_introduction'] ?? '尚未填寫'); ?></p>
+
+            <!-- 顯示模式 -->
+            <div id="view-mode">
+                <p><strong>暱稱：</strong> <?php echo htmlspecialchars($user['username']); ?></p>
+                <p><strong>真實姓名：</strong> <?php echo htmlspecialchars($user['name']); ?></p>
+                <p><strong>性別：</strong> <?php echo htmlspecialchars($user['gender']); ?></p>
+                <p><strong>生日：</strong> <?php echo htmlspecialchars($user['birthday']); ?></p>
+                <p><strong>電話：</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
+                <p><strong>自我介紹：</strong> <?php echo htmlspecialchars($user['self_introduction'] ?? '尚未填寫'); ?></p>
+                <button class="edit-button" onclick="toggleEdit()">✏️ 編輯個資</button>
+            </div>
+
+            <!-- 編輯模式 -->
+            <form id="edit-mode" method="post" style="display:none;">
+                <div class="form-group">
+                    <label for="username">暱稱</label>
+                    <input type="text" name="username" id="username" value="<?php echo htmlspecialchars($user['username']); ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="name">真實姓名</label>
+                    <input type="text" name="name" id="name" value="<?php echo htmlspecialchars($user['name']); ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">性別</label>
+                    <select name="gender" id="gender">
+                        <option value="男" <?php if ($user['gender'] === '男') echo 'selected'; ?>>男</option>
+                        <option value="女" <?php if ($user['gender'] === '女') echo 'selected'; ?>>女</option>
+                        <option value="其他" <?php if ($user['gender'] === '其他') echo 'selected'; ?>>其他</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday">生日</label>
+                    <input type="date" name="birthday" id="birthday" value="<?php echo $user['birthday']; ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">電話</label>
+                    <input type="text" name="phone" id="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
+                </div>
+
+                <div class="form-group">
+                    <label for="self_introduction">自我介紹</label>
+                    <textarea name="self_introduction" id="self_introduction"><?php echo htmlspecialchars($user['self_introduction']); ?></textarea>
+                </div>
+
+                <button type="submit" class="edit-button">儲存</button>
+                <button type="button" onclick="toggleEdit()" class="cancel-button">取消</button>
+            </form>
+
         </div>
 
         <h2>我發起的活動</h2>
@@ -119,8 +193,14 @@ $eval_data = $eval_result->fetch_assoc();
         <h2>我參加的活動</h2>
         <div class="event-card">
             <?php while ($row = $joined_events->fetch_assoc()): ?>
-                    <div>
-                    <h3><?php echo htmlspecialchars($row['event_name']); ?>（主揪：<?php echo htmlspecialchars($row['booker_name']); ?>）</h3>
+                <div>
+                    <h3>
+                        <?php echo htmlspecialchars($row['event_name']); ?>（主揪：
+                        <a href="preview_user.php?uid=<?php echo urlencode($row['booker']); ?>" style="color: lightblue;">
+                            <?php echo htmlspecialchars($row['booker_username']); ?>
+                        </a>）
+                    </h3>
+
                     <p>地點：<?php echo htmlspecialchars($row['location']); ?></p>
                     <p>開始時間：<?php echo $row['start_time']; ?></p>
                     <p>主揪評價：<?php echo htmlspecialchars($row['eval_to_booker'] ?? '未填寫'); ?></p>
@@ -132,9 +212,8 @@ $eval_data = $eval_result->fetch_assoc();
                         elseif ($row['evaluation'] == -1) echo '👎';
                         ?>
                     </p>
-                    </div>
-                <?php endwhile; ?>
-            </div>
+                </div>
+            <?php endwhile; ?>
         </div>
 
         <h2>評價統計</h2>
@@ -143,22 +222,15 @@ $eval_data = $eval_result->fetch_assoc();
             <p><strong>👎 收到的倒讚數：</strong> <?php echo $eval_data['dislikes'] ?? 0; ?></p>
         </div>
 
-
-        <!-- <h2>歷史收到的評價</h2>
-            <div class="event-card">
-                <?php if ($feedbacks->num_rows === 0): ?>
-                <p>目前尚未收到評價。</p>
-                <?php else: ?>
-                <?php while ($row = $feedbacks->fetch_assoc()): ?>
-                    <div class="event-card">
-                    <h3><?php echo htmlspecialchars($row['event_name']); ?>（活動 ID：<?php echo $row['orderid']; ?>）</h3>
-                    <p><strong>主揪 <?php echo htmlspecialchars($row['booker_name']); ?> 給您的評價：</strong></p>
-                    <p><?php echo htmlspecialchars($row['booker_eval']); ?></p>
-                    </div>
-                <?php endwhile; ?>
-            <?php endif; ?>
-        </div> -->
-
+    </div>
 
 </body>
+        <script>
+            function toggleEdit() {
+                const view = document.getElementById('view-mode');
+                const edit = document.getElementById('edit-mode');
+                view.style.display = (view.style.display === 'none') ? 'block' : 'none';
+                edit.style.display = (edit.style.display === 'none') ? 'block' : 'none';
+            }
+        </script>
 </html>
