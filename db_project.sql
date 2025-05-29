@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2025-05-23 10:06:27
+-- 產生時間： 2025-05-29 09:55:52
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -132,7 +132,8 @@ INSERT INTO `involvement` (`orderid`, `uid`, `eval_to_booker`, `booker_eval`, `e
 (1, 'gjhdri4h509ah1h73h2hsdlo3', NULL, NULL, 1),
 (1, 'gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', NULL, NULL, 1),
 (2, 'jre82jd02ls6gwsnx5reww5oosh', '講話很大聲，沒頭沒腦', '不尊重人', -1),
-(2, 'rehg8923njasd9srftgnjrs43hgsdjnrs6uj', '很聒噪的人', '很安靜的人', 1);
+(2, 'rehg8923njasd9srftgnjrs43hgsdjnrs6uj', '很聒噪的人', '很安靜的人', 1),
+(3, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '人好心善良', '蠢貨', 1);
 
 -- --------------------------------------------------------
 
@@ -262,14 +263,14 @@ ALTER TABLE `order_detail`
 -- 資料表的限制式 `event`
 --
 ALTER TABLE `event`
-  ADD CONSTRAINT `event_ibfk_1` FOREIGN KEY (`categories_id`) REFERENCES `categories` (`categories_id`);
+  ADD CONSTRAINT `event_ibfk_1` FOREIGN KEY (`categories_id`) REFERENCES `categories` (`categories_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- 資料表的限制式 `involvement`
 --
 ALTER TABLE `involvement`
   ADD CONSTRAINT `involvement_ibfk_1` FOREIGN KEY (`orderid`) REFERENCES `order_detail` (`orderid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `involvement_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`);
+  ADD CONSTRAINT `involvement_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- 資料表的限制式 `order_detail`
