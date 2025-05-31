@@ -1,13 +1,38 @@
 <?php
-session_start();
-require_once 'db_connect.php'; // 假設這個檔案裡有 $conn 的資料庫連線
-$uid = $_SESSION['uid'] ?? "f8dh3ld8bnwe3bfx8hre3jt7b01gvd";
+require_once 'db_connect.php';
+
+$login_uid = 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd';  //這邊要改為現在登入的帳號
+$uid = $_GET['uid'] ?? null;
+
+echo $login_uid;
+echo '<br>';
+echo $uid;
 
 if (!$uid) {
-    header('Location: index.php');
+    header("Location: ../index/index.php");
     exit;
 }
+
+// 查詢登入者是否為管理員
+$isAdmin = false;
+if ($login_uid) {
+    $stmt = $conn->prepare("SELECT isadmin FROM user WHERE uid = ?");
+    $stmt->bind_param("s", $login_uid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $isAdmin = $row['isadmin'] == 1;
+    }
+}
+
+// 身份判斷
+$isSelf = $login_uid === $uid;
+$canEdit = $isSelf || $isAdmin;  // 可完整顯示 & 編輯
+
+// ✅ 到這裡就代表是自己或管理員，可顯示 profile
 ?>
+
+
 
 <?php
 // 取得使用者資料
@@ -124,15 +149,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1>使用者個人資料</h1>
 
             <!-- 顯示模式 -->
-            <div id="view-mode">
+            <?php if ($canEdit): ?>
+                <!-- 顯示完整版 + 編輯按鈕 -->
+                <div id="view-mode">
+                    <p><strong>暱稱：</strong> <?php echo htmlspecialchars($user['username']); ?></p>
+                    <p><strong>真實姓名：</strong> <?php echo htmlspecialchars($user['name']); ?></p>
+                    <p><strong>性別：</strong> <?php echo htmlspecialchars($user['gender']); ?></p>
+                    <p><strong>生日：</strong> <?php echo htmlspecialchars($user['birthday']); ?></p>
+                    <p><strong>電話：</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
+                    <p><strong>自我介紹：</strong> <?php echo htmlspecialchars($user['self_introduction'] ?? '尚未填寫'); ?></p>
+                    <button class="edit-button" onclick="toggleEdit()">✏️ 編輯個資</button>
+                </div>
+                <!-- 編輯表單同 profile.php -->
+            <?php else: ?>
+                <!-- 僅顯示 preview 內容 -->
                 <p><strong>暱稱：</strong> <?php echo htmlspecialchars($user['username']); ?></p>
-                <p><strong>真實姓名：</strong> <?php echo htmlspecialchars($user['name']); ?></p>
-                <p><strong>性別：</strong> <?php echo htmlspecialchars($user['gender']); ?></p>
-                <p><strong>生日：</strong> <?php echo htmlspecialchars($user['birthday']); ?></p>
-                <p><strong>電話：</strong> <?php echo htmlspecialchars($user['phone']); ?></p>
-                <p><strong>自我介紹：</strong> <?php echo htmlspecialchars($user['self_introduction'] ?? '尚未填寫'); ?></p>
-                <button class="edit-button" onclick="toggleEdit()">✏️ 編輯個資</button>
-            </div>
+                <p><strong>性別：</strong> <?php echo htmlspecialchars($user['gender'] ?? '未填寫'); ?></p>
+                <p><strong>自我介紹：</strong> <?php echo nl2br(htmlspecialchars($user['self_introduction'] ?? '尚未填寫')); ?></p>
+            <?php endif; ?>
+
 
             <!-- 編輯模式 -->
             <form id="edit-mode" method="post" style="display:none;">
@@ -196,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div>
                     <h3>
                         <?php echo htmlspecialchars($row['event_name']); ?>（主揪：
-                        <a href="preview_user.php?uid=<?php echo urlencode($row['booker']); ?>" style="color: lightblue;">
+                        <a href="profile.php?uid=<?php echo urlencode($row['booker']); ?>" style="color: lightblue;">
                             <?php echo htmlspecialchars($row['booker_username']); ?>
                         </a>）
                     </h3>

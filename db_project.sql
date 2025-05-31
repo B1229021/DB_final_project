@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2025-05-29 09:55:52
+-- 產生時間： 2025-05-31 07:36:31
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -46,7 +46,8 @@ INSERT INTO `categories` (`categories_id`, `content`) VALUES
 (7, '市集 / 展覽'),
 (8, '志工 / 公益'),
 (9, '親子 / 家庭'),
-(10, '體育 / 活動');
+(10, '體育 / 活動'),
+(21, '睡覺');
 
 -- --------------------------------------------------------
 
@@ -65,7 +66,6 @@ CREATE TABLE `event` (
 --
 
 INSERT INTO `event` (`categories_id`, `event_id`, `content`) VALUES
-(10, 0, '打籃球'),
 (1, 1, '音樂會 / 演唱會'),
 (1, 2, '舞台劇 / 戲劇'),
 (1, 3, '喜劇 / 脫口秀'),
@@ -108,7 +108,8 @@ INSERT INTO `event` (`categories_id`, `event_id`, `content`) VALUES
 (9, 40, '兒童劇場'),
 (9, 41, '親子手作'),
 (9, 42, '親子戶外活動'),
-(9, 43, '媽媽教室');
+(9, 43, '媽媽教室'),
+(10, 47, '打撞球');
 
 -- --------------------------------------------------------
 
@@ -133,7 +134,10 @@ INSERT INTO `involvement` (`orderid`, `uid`, `eval_to_booker`, `booker_eval`, `e
 (1, 'gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', NULL, NULL, 1),
 (2, 'jre82jd02ls6gwsnx5reww5oosh', '講話很大聲，沒頭沒腦', '不尊重人', -1),
 (2, 'rehg8923njasd9srftgnjrs43hgsdjnrs6uj', '很聒噪的人', '很安靜的人', 1),
-(3, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '人好心善良', '蠢貨', 1);
+(3, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '人好心善良', '蠢貨', -1),
+(4, 'admin', NULL, NULL, 1),
+(4, 'rfaedg8912bnwg83b2', NULL, NULL, 1),
+(5, 'wergea78gewahr592kzx0xfhw3fddbad', NULL, NULL, -1);
 
 -- --------------------------------------------------------
 
@@ -165,7 +169,9 @@ CREATE TABLE `order_detail` (
 INSERT INTO `order_detail` (`orderid`, `booker`, `location`, `deadtime`, `start_time`, `annotation`, `participants`, `state`, `event_id`, `gender_limit`, `male_limit`, `female_limit`, `male_num`, `female_num`) VALUES
 (1, 'g8hl30shd2gg78nfdol3iixye6sio62xuue', '台北市信義區市府路5段', '2025-06-06 10:00:00', '2025-05-23 14:29:30', '放假第一天，出去玩，上午十點集合', 3, '已滿人', 31, 0, NULL, NULL, 3, 0),
 (2, 'f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '台北市中山區南京西路12號', '2025-05-11 14:28:41', '2025-05-23 14:29:30', '母親節打折，去逛街，下午一點集合!!!', 4, '已結束', 1, 1, 0, 4, 0, 3),
-(3, 'wergea78gewahr592kzx0xfhw3fddbad', '桃園市龜山區文化一路259號', '2025-06-03 13:00:00', '2025-06-03 14:00:00', '哪個大神來救我的資料庫啊', 5, '已成立', 7, 0, NULL, NULL, 2, 0);
+(3, 'wergea78gewahr592kzx0xfhw3fddbad', '桃園市龜山區文化一路259號', '2025-06-03 13:00:00', '2025-06-03 14:00:00', '哪個大神來救我的資料庫啊', 5, '已成立', 7, 0, NULL, NULL, 2, 0),
+(4, 'wergea78gewahr592kzx0xfhw3fddbad', '全家', '2025-05-31 07:24:07', '2025-05-09 13:24:07', '管理員集合', 3, '已預約', 7, 0, NULL, NULL, 0, 0),
+(5, 'rehg8923njasd9srftgnjrs43hgsdjnrs6uj', '123', '2025-05-31 07:27:15', '2025-05-02 13:27:15', NULL, 2, '已預約', 47, 0, NULL, NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -190,8 +196,9 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`uid`, `username`, `name`, `gender`, `birthday`, `self_introduction`, `isadmin`, `phone`, `identify_ID`) VALUES
+('admin', 'admin', 'admin', '男', '2025-05-02', 'admin', 1, '0000000000', '0000000000'),
 ('ergse9gwq42lsd7gjl478wshnjsjklfd', '尊', '朱玉恩', '男', '1998-08-08', '哈樓大家好我是尊', 0, '0956789012', 'G123456789'),
-('f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '星予', '陳欣妤', '女', '2025-05-23', '予是三聲，妤是二聲', 0, '0912345678', 'B123456789'),
+('f8dh3ld8bnwe3bfx8hre3jt7b01gvd', '星予', '陳欣妤', '女', '2025-05-23', '予是三聲，妤是二聲', 0, '0912345679', 'B123456789'),
 ('g8hl30shd2gg78nfdol3iixye6sio62xuue', '俊傑哥', '林俊傑', '男', '2025-05-23', '我是歌手', 0, '0987654321', 'C123456789'),
 ('gjhdri4h509ah1h73h2hsdlo3', '資工二系學會長', '林威宇', '男', '2025-05-23', '歡迎妹子來找我', 0, '0923456789', 'D123456789'),
 ('gsd8fgl3vx0dh3g3h36h6h0az1he0f1h', '我喜歡句號', '黃逗號', '男', '2025-05-23', NULL, 0, '0934567890', 'E123456789'),
@@ -247,13 +254,19 @@ ALTER TABLE `user`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `categories_id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `categories_id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `event`
+--
+ALTER TABLE `event`
+  MODIFY `event_id` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `order_detail`
 --
 ALTER TABLE `order_detail`
-  MODIFY `orderid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `orderid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- 已傾印資料表的限制式
@@ -277,7 +290,7 @@ ALTER TABLE `involvement`
 --
 ALTER TABLE `order_detail`
   ADD CONSTRAINT `order_detail_ibfk_1` FOREIGN KEY (`booker`) REFERENCES `user` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `order_detail_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`event_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `order_detail_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `event` (`event_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
