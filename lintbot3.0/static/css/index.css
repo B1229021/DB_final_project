@@ -1,0 +1,433 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* 讓邊框和內距包含在元素總寬度內 */
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            /* 設定漸層背景色 */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; /* 確保頁面至少佔滿整個視窗高度 */
+            color: #333;
+        }
+
+        /* ========== 主要容器樣式 ========== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto; /* 水平置中 */
+            padding: 0 15px;
+            min-height: 100vh;
+        }
+
+        /* ========== 頁面標題區域 ========== */
+        .header {
+            background: rgba(255, 255, 255, 0.95); /* 半透明白色背景 */
+            backdrop-filter: blur(10px); /* 背景模糊效果 */
+            padding: 1rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #764ba2;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* ========== 控制面板樣式 ========== */
+        .control-panel {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px; /* 元素間距 */
+            flex-wrap: wrap; /* 允許換行 */
+            align-items: center;
+        }
+
+        /* ========== 按鈕基礎樣式 ========== */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px; /* 圓角按鈕 */
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease; /* 平滑過渡效果 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 主要按鈕樣式（漸層藍紫色） */
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px); /* 懸停時向上移動 */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 次要按鈕樣式（灰色） */
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        /* 危險按鈕樣式（紅色） */
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        /* ========== 表單控制項樣式 ========== */
+        .select-dropdown, .time-input {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            background: white;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        /* ========== 活動列表網格佈局 ========== */
+        .events-list {
+            display: grid;
+            /* 響應式網格：每列最少300px寬度，自動填滿 */
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem; /* 網格間距 */
+            margin-bottom: 2rem;
+        }
+
+        /* ========== 活動卡片樣式 ========== */
+        .event-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer; /* 滑鼠指標變成手型 */
+        }
+
+        /* 卡片懸停效果 */
+        .event-card:hover {
+            transform: translateY(-5px); /* 向上浮起效果 */
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 活動卡片頭部區域 */
+        .event-header {
+            display: flex;
+            justify-content: space-between; /* 兩端對齊 */
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        /* 活動類別標籤 */
+        .event-category {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* 活動時間顯示 */
+        .event-time {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* ========== 活動詳情區域 ========== */
+        .event-details {
+            margin-bottom: 1rem;
+        }
+
+        /* 每個詳情項目 */
+        .event-detail-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* 詳情標籤（如：活動、出發等） */
+        .event-detail-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 80px; /* 固定寬度讓對齊更整齊 */
+        }
+
+        /* 詳情值 */
+        .event-detail-value {
+            color: #777;
+            flex: 1; /* 佔據剩餘空間 */
+        }
+        .admin-btn {
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            z-index: 10;
+            background: linear-gradient(45deg, #ff9800, #ff5722);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 10px 22px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-btn:hover {
+            background: linear-gradient(45deg, #ff5722, #ff9800);
+        }
+
+        .avatar-list {
+            display: flex;
+            flex-direction: row;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(100,80,150,0.09);
+            cursor: pointer;
+            position: relative;
+        }
+        .avatar.creator::after {
+            content: '👑';
+            position: absolute;
+            right: -10px;
+            top: -10px;
+            font-size: 1rem;
+        }
+        .avatar:hover {
+            outline: 2px solid #764ba2;
+        }
+
+        /* 評價彈窗 */
+        .user-review-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.35);
+        }
+        .user-review-content {
+            background: #fff;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            margin: 6% auto;
+            padding: 1.5rem 1rem 1rem 1rem;
+            box-shadow: 0 18px 44px rgba(0,0,0,0.24);
+            position: relative;
+        }
+        .close-user-review {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+        }
+        .user-review-header {
+            text-align: center;
+            margin-bottom: 1.2rem;
+        }
+        .user-review-header img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 3px solid #764ba2;
+        }
+        .user-review-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #764ba2;
+            margin-top: 0.3rem;
+        }
+        .user-review-gb {
+            margin: 0.4rem 0 1rem 0;
+            font-size: 1rem;
+        }
+        .review-msg-list {
+            max-height: 160px;
+            overflow-y: auto;
+            margin-top: 0.7rem;
+        }
+        .review-msg-item {
+            font-size: 0.97rem;
+            padding: 0.3rem 0.2rem;
+            border-bottom: 1px solid #eee;
+        }
+        .review-msg-item:last-child { border-bottom: none; }
+        /* 性別人數下拉 */
+        .gender-selects {
+            display: flex;
+            gap: 1rem;
+        }
+        .gender-selects .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .admin-btn {
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            z-index: 100;
+            background: linear-gradient(45deg, #ff9800, #ff5722);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 10px 22px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-btn:hover {
+            background: linear-gradient(45deg, #ff5722, #ff9800);
+        }
+        /* ========== Modal z-index 修正 ========== */
+        .modal {
+            z-index: 2001 !important;
+        }
+        .user-review-modal {
+            z-index: 2002 !important;
+        }
+        .modal {
+    display: none;
+    position: fixed;
+    z-index: 2001;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.35);
+    justify-content: center;
+    align-items: center;
+}
+.modal.show {
+    display: flex;
+}
+.modal-content {
+    background: #fff;
+    border-radius: 20px;
+    min-width: 340px;
+    max-width: 430px;
+    width: 96%;
+    box-shadow: 0 18px 44px rgba(0,0,0,0.24);
+    position: relative;
+    padding: 2rem 2rem 1.2rem 2rem;
+    animation: modalFadeIn 0.32s;
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(30px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+}
+.modal-header h2 {
+    color: #6c48c9;
+    font-size: 1.28rem;
+    margin: 0;
+    font-weight: bold;
+}
+.close {
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: #888;
+    font-weight: bold;
+    transition: color 0.2s;
+}
+.close:hover {
+    color: #444;
+}
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+        .user-btn {
+            position: absolute;
+            top: 18px;
+            left: 32px;
+            z-index: 20;
+            background: linear-gradient(45deg, #009688, #26c6da);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 10px 22px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .user-btn:hover {
+            background: linear-gradient(45deg, #26c6da, #009688);
+        }
+        .history-btn {
+            /* 歷史紀錄按鈕樣式 */
+            background: linear-gradient(45deg, #8e24aa, #ba68c8);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 10px 22px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .history-btn:hover {
+            background: linear-gradient(45deg, #ba68c8, #8e24aa);
+        }
+        /* 歷史紀錄 Modal */
+        #historyModal.modal {
+            z-index: 2100;
+        }
+        /* 讚/倒讚顯示 */
+        .eval-area { display:inline-flex; align-items:center; gap:4px; font-size:0.95em;}
+        .eval-good {color: #388e3c; margin-left:3px;}
+        .eval-bad {color: #d32f2f; margin-left:3px;}
+        .member-btn {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2px 10px;
+            border: 1px solid #ddd;
+            margin: 0 3px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .member-btn:hover {
+            background: #e0e0ff;
+        }
