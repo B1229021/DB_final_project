@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>管理員後台</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="sidebar">
+            <h2>管理後台</h2>
+            <a href="#category">📂 類別管理</a>
+            <a href="#event">🎉 活動管理</a>
+            <a href="#order">📦 訂單管理</a>
+            <a href="#eval">📝 評價管理</a>
+            <a href="#user">👤 使用者管理</a>
+            <hr>
+            <a id="home-link" href="#">👤 回首頁</a>
+        </div>
+        
+        <div class="main-content">
+            <h1>🎛 管理員後台</h1>
+
+            <!-- 活動類別管理 -->
+            <h2 id="category">
+                📂 活動類別 
+                <button type="button" onclick="toggleCategoryEdit()">✏️ 編輯</button>
+            </h2>
+            <table id="categories-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>內容</th>
+                        <th class="category-action-header" style="display: none;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="categories-table-body">
+                    <!-- JS 動態產生內容 -->
+                </tbody>
+            </table>
+            <div id="category-form" style="display: none;">
+                <h4>➕ 新增活動類別</h4>
+                <form id="add-category-form">
+                    <input type="text" name="new_category_name" required placeholder="類別名稱">
+                    <button type="submit" id="add-category-btn" disabled>新增</button>
+                </form>
+            </div>
+
+            <!-- 活動管理 -->
+            <h2 id="event">
+                🎉 活動 
+                <button id="toggleEventBtn" type="button" onclick="toggleEventEdit()">✏️ 編輯</button>
+            </h2>
+            <table id="events-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>類別</th>
+                        <th>內容</th>
+                        <th class="event-action-header" style="display: none;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="events-table-body">
+                    <!-- JS 動態產生內容 -->
+                </tbody>
+            </table>
+            <div id="event-form" style="display: none;">
+                <h4>➕ 新增活動</h4>
+                <form id="add-event-form">
+                    <select name="new_event_category" required id="event-category-select">
+                        <option value="">選擇類別</option>
+                        <!-- JS 動態產生選項 -->
+                    </select>
+                    <input type="text" name="new_event_name" required placeholder="活動名稱">
+                    <button type="submit" id="add-event-btn" disabled>新增</button>
+                </form>
+            </div>
+
+            <!-- 訂單管理 -->
+            <h2 id="order">📅 訂單</h2>
+            <table id="orders-table">
+                <thead>
+                    <tr><th>ID</th><th>發起人</th><th>地點</th><th>活動ID</th><th>狀態</th></tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- JS 動態產生內容 -->
+                </tbody>
+            </table>
+
+            <!-- 評價管理 -->
+            <h2 id="eval">⭐ 評價</h2>
+            <table id="evals-table">
+                <thead>
+                    <tr><th>訂單ID</th><th>參與者</th><th>評價給發起人</th><th>發起人回應</th><th>正負評</th></tr>
+                </thead>
+                <tbody id="evals-table-body">
+                    <!-- JS 動態產生內容 -->
+                </tbody>
+            </table>
+
+            <!-- 使用者管理 -->
+            <h2 id="user">
+                👤 使用者 
+                <button id="toggleUserBtn" type="button" onclick="toggleEditActions('user', 'toggleUserBtn')">✏️ 編輯</button>
+            </h2>
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th>UID</th><th>帳號</th><th>姓名</th><th>性別</th><th>電話</th><th>身份證</th>
+                        <th class="user-header" style="display: none;">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body">
+                    <!-- JS 動態產生內容 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

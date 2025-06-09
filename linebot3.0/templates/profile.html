@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>個人檔案 - {{ user.username }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+
+        <!-- 頁面導航按鈕 -->
+        <div style="margin-bottom: 16px;">
+            <a href="{{ url_for('index', uid=uid) }}" class="nav-button">回到首頁</a>
+            <a href="{{ url_for('profile', uid=uid) }}" class="nav-button">回到我的個人頁</a>
+        </div>
+
+        <div class="profile-info">
+            <h1>使用者個人資料</h1>
+            {% if canEdit %}
+                <div id="view-mode">
+                    <p><strong>暱稱：</strong> {{ user.username }}</p>
+                    <p><strong>真實姓名：</strong> {{ user.name }}</p>
+                    <p><strong>性別：</strong> {{ user.gender }}</p>
+                    <p><strong>生日：</strong> {{ user.birthday }}</p>
+                    <p><strong>電話：</strong> {{ user.phone }}</p>
+                    <p><strong>自我介紹：</strong> {{ user.self_introduction or '尚未填寫' }}</p>
+                    <button class="edit-button" onclick="toggleEdit()">✏️ 編輯個資</button>
+                </div>
+            {% else %}
+                <p><strong>暱稱：</strong> {{ user.username }}</p>
+                <p><strong>性別：</strong> {{ user.gender or '未填寫' }}</p>
+                <p><strong>自我介紹：</strong> {{ user.self_introduction or '尚未填寫' }}</p>
+            {% endif %}
+
+            {% if canEdit %}
+            <form id="edit-mode" method="post" style="display:none;">
+                <div class="form-group">
+                    <label for="username">暱稱</label>
+                    <input type="text" name="username" id="username" value="{{ user.username }}">
+                </div>
+                <div class="form-group">
+                    <label for="name">真實姓名</label>
+                    <input type="text" name="name" id="name" value="{{ user.name }}">
+                </div>
+                <div class="form-group">
+                    <label for="gender">性別</label>
+                    <select name="gender" id="gender">
+                        <option value="男" {% if user.gender == '男' %}selected{% endif %}>男</option>
+                        <option value="女" {% if user.gender == '女' %}selected{% endif %}>女</option>
+                        <option value="其他" {% if user.gender == '其他' %}selected{% endif %}>其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="birthday">生日</label>
+                    <input type="date" name="birthday" id="birthday" value="{{ user.birthday }}">
+                </div>
+                <div class="form-group">
+                    <label for="phone">電話</label>
+                    <input type="text" name="phone" id="phone" value="{{ user.phone }}">
+                </div>
+                <div class="form-group">
+                    <label for="self_introduction">自我介紹</label>
+                    <textarea name="self_introduction" id="self_introduction">{{ user.self_introduction }}</textarea>
+                </div>
+                <button type="submit" class="edit-button">儲存</button>
+                <button type="button" onclick="toggleEdit()" class="cancel-button">取消</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <h2>我發起的活動</h2>
+        <div class="event-card">
+        {% for row in created_events %}
+            <div>
+                <h3>{{ row.event_name }}</h3>
+                <p>地點：{{ row.location }}</p>
+                <p>開始時間：{{ row.start_time }}</p>
+                <p>備註：{{ row.annotation }}</p>
+                <p>對我評價：{{ row.booker_eval or '未填寫' }}</p>
+                 
+                <p>狀態：{{ row.state }}</p>
+            </div>
+        {% endfor %}
+        </div>
+
+        <h2>我參加的活動</h2>
+        <div class="event-card">
+        {% for row in joined_events %}
+            <div>
+                <h3>
+                    {{ row.event_name }}（主揪：
+                    <a href="{{ url_for('profile', uid=uid, other_uid=row.booker) }}" style="color: lightblue;">
+                        {{ row.booker_username }}
+                    </a>）
+                </h3>
+                <p>地點：{{ row.location }}</p>
+                <p>開始時間：{{ row.start_time }}</p>
+                <p>主揪評價：{{ row.eval_to_booker or '未填寫' }}</p>
+                <p>對我評價：{{ row.booker_eval or '未填寫' }}</p>
+                <p>整體評價：
+                {% if row.evaluation is none %}
+                    未評價
+                {% elif row.evaluation == 1 %}
+                    👍
+                {% elif row.evaluation == -1 %}
+                    👎
+                {% endif %}
+                </p>
+            </div>
+        {% endfor %}
+        </div>
+
+        <h2>評價統計</h2>
+        <div class="stat-box">
+            <p><strong>👍 收到的讚數：</strong> {{ eval_data.likes or 0 }}</p>
+            <p><strong>👎 收到的倒讚數：</strong> {{ eval_data.dislikes or 0 }}</p>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+</body>
+</html>
